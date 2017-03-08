@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://ehcache.org/ehcache.xsd">
+    <diskStore path="D:/temp"/>
+    <defaultCache
+            maxElementsInMemory="1000"
+            maxElementsOnDisk="10000"
+            eternal="false"
+            timeToIdleSeconds="300"
+            timeToLiveSeconds="600"
+            diskExpiryThreadIntervalSeconds="300"
+            memoryStoreEvictionPolicy="LRU">
+    </defaultCache>
+    
+    <cache name="SimplePageCachingFilter" 
+    	maxElementsInMemory="100"  
+        maxElementsOnDisk="1000" 
+        eternal="false" 
+        overflowToDisk="true"  
+        diskPersistent="true"
+        diskSpoolBufferSizeMB="50" 
+        timeToLiveSeconds="300" 
+        timeToIdleSeconds="120" 
+        diskExpiryThreadIntervalSeconds="120"
+        memoryStoreEvictionPolicy="LFU" />  
+        
+        
+         <cache name="SimplePageFragmentCachingFilter" 
+    	maxElementsInMemory="100"  
+        maxElementsOnDisk="1000" 
+        eternal="false" 
+        overflowToDisk="true"  
+        diskPersistent="true"
+        diskSpoolBufferSizeMB="50" 
+        timeToLiveSeconds="600" 
+        timeToIdleSeconds="300" 
+        diskExpiryThreadIntervalSeconds="300"
+        memoryStoreEvictionPolicy="LFU" />  
+    
+    
+    <cache name="daoCache" 
+    	maxElementsInMemory="1000"  
+        maxElementsOnDisk="10000" 
+        eternal="false" 
+        overflowToDisk="true"  
+        diskPersistent="true"
+        diskSpoolBufferSizeMB="50" 
+        timeToIdleSeconds="1800" 
+        timeToLiveSeconds="3600" 
+        diskExpiryThreadIntervalSeconds="1800"
+        memoryStoreEvictionPolicy="LFU" />  
+        
+</ehcache>
