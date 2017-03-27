@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2017-3-23 16:11:55 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="net.hncu.notes.table.PicInfo" table="N_PICINFO">
+        <id name="id" type="java.lang.Integer">
+            <column name="ID" />
+            <generator class="native" />
+        </id>
+        <property name="picPath" type="java.lang.String">
+            <column name="PICPATH" />
+        </property>
+        <many-to-one name="notes" class="net.hncu.notes.table.Notes" fetch="join">
+            <column name="NOTES_ID" />
+        </many-to-one>
+        <property name="width" type="java.lang.Integer">
+            <column name="WIDTH" />
+        </property>
+        <property name="height" type="java.lang.Integer">
+            <column name="HEIGHT" />
+        </property>
+        <property name="firstTime" type="timestamp">
+            <column name="FIRSTTIME" />
+        </property>
+    </class>
+</hibernate-mapping>
