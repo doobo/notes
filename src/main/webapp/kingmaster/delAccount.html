@@ -1,0 +1,152 @@
+<!--已删除账号列表-->
+<div class="col-sm-12" id="app">
+	<div class="box box-primary">
+		<div class="box-header with-border ui-sortable-handle">
+			<form class="form-inline" onsubmit="return false;">
+				<div class="form-group">
+					<button class="btn btn-primary search-btn">
+						<i class="fa  fa-rotate-left"></i>恢复所选
+					</button>
+				</div>
+				<div class="form-group">
+					<button class="btn btn-primary search-btn">
+						<i class="fa  fa-trash"></i>彻底删除
+					</button>
+				</div>
+				<div class="form-group">
+					<select class="form-control">
+						<option>账号名称</option>
+						<option>账号昵称</option>
+					</select>
+				</div>
+				<div class="form-group">
+					<input  type="text" class="form-control" placeholder="请输入搜索内容...">
+				</div>
+				<div class="form-group">
+					<button class="btn btn-primary search-btn">
+						<i class="fa fa-search"></i>查询
+					</button>
+				</div>
+			</form>
+			<!-- /.box-tools -->
+		</div>
+		<!-- /.box-header -->
+		<div class="box">
+			<table class="table table-hover">
+				<thead>
+				<tr>
+					<th><input type="checkbox" name="allCheck"
+							   onclick="checkAll('allCheck', 'childBox')"></th>
+					<th>账号名称</th>
+					<th>账号昵称</th>
+					<th>注册日期</th>
+					<th>管理工具</th>
+				</tr>
+				</thead>
+				<tbody>
+				<tr v-for="(delUser,index) in delUsers">
+					<td><input type="checkbox" name="childBox" v-bind:value="index" v-model="checks"></td>
+					<td>{{delUser[1]}}</td>
+					<td>{{delUser[2]}}</td>
+					<td>{{moment(delUser[3]).format('YYYY-MM-DD HH:mm:ss')}}</td>
+					<td>
+						<button class="btn btn-default btn-xs fa fa-comment-o">详细</button>
+						<button class="btn btn-default btn-xs fa fa-rotate-left">恢复</button>
+						<button class="btn btn-default btn-xs fa fa-trash">彻底删除</button>
+					</td>
+				</tr>
+				</tbody>
+			</table>
+			<!--</div>-->
+			<div style="text-align:center;">
+				<ul id="pagination-demo" class="pagination-sm"></ul>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+    //获取指定页面的参数
+    var nextPage = function(nextPage,pageSize,callback){
+        $.ajax({
+            type:"post",
+            url:'getDelUser',
+            data:{
+                curPage:nextPage,
+                pageSize:pageSize
+            },
+            success:function (result) {
+                data.delUsers = result.delUser;
+                data.pageSize = result.pageSize;
+                data.curPage = result.curPage;
+                data.pageCount = result.pageCount;
+                data.count = result.count;
+            },
+            complete:function () {
+                if(typeof callback === "function"){
+                    callback();
+                }
+            }
+        });
+    }
+
+    /**
+     * 复选框全选或全不选的函数
+     * @param {Object} allName 全选框的name，字符参数-'name'
+     * @param {Object} childName 子复选框的name，字符参数-'name'
+     */
+    function checkAll(allName, childName) {
+        var isChecked = $("input[name='" + allName + "']").prop("checked");
+        if(isChecked){
+            data.checks = [];
+            $("input[name='" + childName + "']").each(function() {
+                //$(this).prop("checked", isChecked);
+                data.checks.push($(this).attr("value"));
+            });
+        }else{
+            data.checks = [];
+        }
+    }
+
+
+    $(function () {
+        nextPage(1,5,function () {
+            $('#pagination-demo').twbsPagination({
+                totalPages: data.pageCount,
+                visiblePages: 7,
+                first:'首页',
+                last:'末页',
+                prev:'上一页',
+                next:'下一页',
+                onPageClick: function (event, page) {
+                    nextPage(page,data.pageSize,function () {
+                        $("input[name=allCheck]")
+                            .prop("checked", false);
+                        data.checks = [];
+                    });
+                }
+            });
+        });
+    });
+
+    var data = {
+        pageSize:5,
+        pageCount:1,
+        curPage:1,
+        count:0,
+        delUsers:[],
+		checks:[]
+    }
+
+    var vue = new Vue({
+        el: '#app',
+        data: data,
+        methods:{
+            del:function (index) {
+                data.users.splice(index, 1);
+            },
+            check:function (index,status) {
+                vue.$set(data.users[index],4,status);
+            }
+        }
+    });
+</script>

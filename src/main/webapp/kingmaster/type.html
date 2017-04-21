@@ -1,0 +1,117 @@
+<!--笔记类别管理-->					
+<div class="col-sm-12" id="app">
+	<div class="box box-primary">
+		<div class="box-header with-border ui-sortable-handle">
+			<form class="form-inline" onsubmit="return false;">
+				<div class="form-group">
+				<select class="form-control">
+						<option>全部分类</option>
+						<option>JavaSE基础</option>
+					</select>
+				</div>
+				<div class="form-group">
+					<input  type="text" class="form-control" placeholder="请输入摘要内容...">
+				</div>
+				<div class="form-group">
+					<button class="btn btn-primary search-btn">
+						<i class="glyphicon glyphicon-search"></i>查询
+					</button>
+				</div>
+			</form>
+			<!-- /.box-tools -->
+		</div>
+		<!-- /.box-header -->
+		<div class="box">
+		<table class="table table-hover">
+			<thead>
+			<tr>
+				<th>分类名称</th>
+				<th>所属用户</th>
+				<th>所属主分类</th>
+				<th>创建日期</th>
+				<th>管理工具</th>
+			</tr>
+			</thead>
+			<tbody>
+				<tr v-for="(child , index) in childTypes">
+				<td>{{child[1]}}</td>
+				<td>{{child[2]}}</td>
+				<td>{{child[2]}}</td>
+				<td>{{moment(child[4]).format('YYYY-MM-DD HH:mm:ss')}}</td>
+				<td>
+					<button class="btn btn-default btn-xs fa fa-edit">修改</button>
+					<button class="btn btn-default btn-xs fa fa-comment-o">详细描述</button>
+					<button class="btn btn-default btn-xs fa fa-anchor">主类信息</button>
+				</td>
+				</tr>
+			</tbody>
+		</table>
+		<!--</div>-->
+		<div style="text-align:center;">
+			<ul id="pagination-demo" class="pagination-sm"></ul>
+		</div>
+		</div>
+	</div>
+</div>
+<script>
+    //获取指定页面的参数
+    var nextPage = function(nextPage,pageSize,callback){
+        $.ajax({
+            type:"post",
+            url:'getSimpleChildType',
+            data:{
+                curPage:nextPage,
+                pageSize:pageSize
+            },
+            success:function (result) {
+                data.childTypes = result.childTypes;
+                data.pageSize = result.pageSize;
+                data.curPage = result.curPage;
+                data.pageCount = result.pageCount;
+                data.count = result.count;
+            },
+            complete:function () {
+                if(typeof callback === "function"){
+                    callback();
+                }
+            }
+        });
+    }
+
+    $(function () {
+        nextPage(1,6,function () {
+            qiao.bs.bsdate('.qdate');
+            $('#pagination-demo').twbsPagination({
+                totalPages: data.pageCount,
+                visiblePages: 7,
+                first:'首页',
+                last:'末页',
+                prev:'上一页',
+                next:'下一页',
+                onPageClick: function (event, page) {
+                    nextPage(page,data.pageSize,undefined);
+                }
+            });
+        });
+    });
+    var data = {
+        pageSize:5,
+        pageCount:1,
+        curPage:1,
+        count:0,
+        childTypes:[],
+    }
+
+    var vue = new Vue({
+        el: '#app',
+        data: data,
+        methods:{
+            del:function (index) {
+                data.childTypes.splice(index, 1);
+            },
+            check:function (index,status) {
+                vue.$set(data.childTypes[index],4,status);
+            }
+        }
+    });
+</script>

@@ -9,7 +9,7 @@
             <generator class="native" />
         </id>
         <property name="picPath" type="java.lang.String">
-            <column name="PICPATH" />
+            <column name="PICPATH" unique="true" not-null="true" />
         </property>
         <many-to-one name="notes" class="net.hncu.notes.table.Notes" fetch="join">
             <column name="NOTES_ID" />

@@ -21,6 +21,23 @@ public class User {
 
     private Date signTime;
 
+    public User( String username, String nickname,
+                String password, Integer type, Integer status, Date signTime) {
+        this.username = username;
+        this.nickname = nickname;
+        this.password = password;
+        this.type = type;
+        this.status = status;
+        this.signTime = signTime;
+    }
+
+    public User() {
+    }
+
+    public User(Integer id) {
+        this.id = id;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -75,5 +92,18 @@ public class User {
 
     public void setSignTime(Date signTime) {
         this.signTime = signTime;
+    }
+
+    @Override
+    public String toString() {
+        return "User{" +
+                "id=" + id +
+                ", username='" + username + '\'' +
+                ", nickname='" + nickname + '\'' +
+                ", password='" + password + '\'' +
+                ", type=" + type +
+                ", status=" + status +
+                ", signTime=" + signTime +
+                '}';
     }
 }

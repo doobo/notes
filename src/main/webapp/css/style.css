@@ -9,9 +9,10 @@ body{
 	margin-bottom: 20px;
 }
 
-pre{
-	
+th,td{
+    text-align:center;  
 }
+
 
 .col-center-block {  
     float: none;  
@@ -386,4 +387,31 @@ pre{
 .box-comments .text-muted {
   font-weight: 400;
   font-size: 12px;
+}
+
+a.next{
+   color: #333;
+   TEXT-DECORATION: none
+}
+
+a.a-btn{
+	margin: 3px 5px 3px 5px;
+}
+
+a.a-btn:link {
+ color: #333;
+ TEXT-DECORATION: none
+}
+a.a-btn:visited {
+ COLOR: #333;
+ TEXT-DECORATION: none
+}
+a.a-btn:hover {
+ background: #0000FF;
+ color: #FFF;
+ text-decoration: none;
+}
+a.a-btn:active {
+  COLOR: #333;
+  TEXT-DECORATION: none
 }

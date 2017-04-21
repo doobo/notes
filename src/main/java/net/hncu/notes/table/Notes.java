@@ -25,6 +25,34 @@ public class Notes {
 
     private Date firstTime;
 
+    public Notes() {
+    }
+
+    public Notes(Integer id, String title, ChildType childType
+            , Integer check, Integer status
+            , Integer share, Date firstTime) {
+        this.id = id;
+        this.title = title;
+        this.childType = childType;
+        this.check = check;
+        this.status = status;
+        this.share = share;
+        this.firstTime = firstTime;
+    }
+
+    public Notes(String title,
+                 Integer childTypeID, Integer userID
+                , String description, Integer share) {
+        this.title = title;
+        this.childType = new ChildType(childTypeID,null);
+        this.user = new User(userID);
+        this.description = description;
+        this.share = share;
+        this.firstTime = new Date();
+        this.status = 0;
+        this.check = 0 ;
+    }
+
     public Integer getId() {
         return id;
     }
@@ -95,5 +123,20 @@ public class Notes {
 
     public void setFirstTime(Date firstTime) {
         this.firstTime = firstTime;
+    }
+
+    @Override
+    public String toString() {
+        return "Notes{" +
+                "id=" + id +
+                ", title='" + title + '\'' +
+                ", childType=" + childType.getId() +
+                ", user=" + user +
+                ", description='" + description + '\'' +
+                ", check=" + check +
+                ", status=" + status +
+                ", share=" + share +
+                ", firstTime=" + firstTime +
+                '}';
     }
 }

@@ -17,6 +17,25 @@ public class MainType {
 
     private Date firstTime;
 
+    public MainType() {
+    }
+
+    public MainType(Integer id) {
+        this.id = id;
+    }
+
+    public MainType(Integer id, String typename) {
+        this.id = id;
+        this.typename = typename;
+    }
+
+    public MainType(String typename, String description, Integer userID) {
+        this.typename = typename;
+        this.description = description;
+        this.user = new User(userID);
+        this.firstTime = new Date();
+    }
+
     public Integer getId() {
         return id;
     }
@@ -55,5 +74,16 @@ public class MainType {
 
     public void setFirstTime(Date firstTime) {
         this.firstTime = firstTime;
+    }
+
+    @Override
+    public String toString() {
+        return "MainType{" +
+                "id=" + id +
+                ", typename='" + typename + '\'' +
+                ", description='" + description + '\'' +
+                ", user=" + user +
+                ", firstTime=" + firstTime +
+                '}';
     }
 }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:v-bind="http://www.w3.org/1999/xhtml">
 	<head>
 		<meta charset="utf-8" lang="zh_CN">
 		<title>个人学习笔记网-首页</title>
@@ -14,9 +14,12 @@
 		<script type="text/javascript" src="js/html5shiv.js" ></script>
 		<script type="text/javascript" src="js/respond.min.js" ></script>
       	<![endif]-->
+		<!--AadminLTE基本资源-->
+		<link rel="stylesheet" href="css/font-awesome.min.css" />
+
 	</head>
 	<body>
-	<div class="container">
+	<div class="container" id="app">
 	<div class="row clearfix">
 			<a href="#top" id="toTop"></a>
 			<nav class="navbar navbar-inverse" role="navigation">
@@ -32,7 +35,7 @@
 							 <a href="static/index.html">新建笔记</a>
 						</li>
 						<li>
-							 <a href="#">功能介绍</a>
+							 <a href="public/allType.html">全部分类</a>
 						</li>
 						<li>
 							 <a href="#">高级搜索</a>
@@ -45,7 +48,7 @@
 					</form>
 					<ul class="nav navbar-nav navbar-right">
 						<li>
-							 <a href="public/admin2.html">登录</a>
+							 <a href="kingmaster/index.html">登录</a>
 						</li>
 						<li>
 							 <a href="#">网站导航</a>
@@ -66,136 +69,64 @@
 					</li>
 				</ol>
 				<div class="carousel-inner">
-					<div class="item active">
-						<img alt="" src="images/tu1.jpg" />
+					<div v-for="(note,index) in data.notes" class="item"
+						v-bind:class="{active:0 == index}">
+						<a v-bind:href="'public/next.html?id='+note[0]" target="_blank">
+						<img alt="" v-bind:src="data.imgs[index]"/>
+						</a>
 						<div class="carousel-caption">
 							<h4>
-								First Thumbnail label
+								{{note[1]}}
 							</h4>
 							<p>
-								Java得到随机字符串
-							</p>
-						</div>
-					</div>
-					<div class="item">
-						<img alt="" src="images/tu2.jpg" />
-						<div class="carousel-caption">
-							<h4>
-								Second Thumbnail label
-							</h4>
-							<p>
-								验证手机邮箱身份证等
-							</p>
-						</div>
-					</div>
-					<div class="item">
-						<img alt="" src="images/tu3.jpg" />
-						<div class="carousel-caption">
-							<h4>
-								Third Thumbnail label
-							</h4>
-							<p>
-								Java调用浏览器打开链接
+								{{moment(Number(note[2]))
+								.format('YYYY-MM-DD HH:mm:ss')}}
 							</p>
 						</div>
 					</div>
 				</div> <a class="left carousel-control" href="#carousel-608726" data-slide="prev"><span class="glyphicon glyphicon-chevron-left"></span></a> <a class="right carousel-control" href="#carousel-608726" data-slide="next"><span class="glyphicon glyphicon-chevron-right"></span></a>
 			</div>
 	</div><!--幻灯片结束-->
-	
 
-	
 	<div class="row clearfix" style="margin-top: 10px;">
-				<div class="row clearfix">
-				<div class="col-md-4 column">
-					<div class="thumbnail">
-						<img alt="300x200" src="images/default2.jpg" />
-						<div class="caption">
-							<h3>
-								Thumbnail label
-							</h3>
-							<p>
-								Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.
-							</p>
-							<p>
-								 <a class="btn btn-primary" href="#">Action</a> <a class="btn" href="#">Action</a>
-							</p>
-						</div>
+		<div class="row" style="word-break:break-all;">
+		<div class="col-md-4" v-for="(note,index) in tmp">
+			<!-- USERS LIST -->
+			<div v-bind:class="['box' ,index%2==0?'box-primary':'box-warning']">
+				<div class="box-header with-border">
+					<h3 class="box-title" v-if="note[1].length<10">
+						{{note[1]}}
+					</h3>
+					<h3 class="box-title" v-if="note[1].length>=10">
+						{{note[1].substring(0,10)+'...'}}
+					</h3>
+					<div class="box-tools pull-right">
+						<button type="button" class="btn btn-box-tool"
+								data-widget="collapse"><i class="fa fa-minus"></i>
+						</button>
+						<button type="button" class="btn btn-box-tool"
+								data-widget="remove"><i class="fa fa-times"></i>
+						</button>
 					</div>
 				</div>
-				<div class="col-md-4 column">
-					<div class="thumbnail">
-						<img alt="300x200" src="images/default1.jpg" />
-						<div class="caption">
-							<h3>
-								Thumbnail label
-							</h3>
-							<p>
-								Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.
-							</p>
-							<p>
-								 <a class="btn btn-primary" href="#">Action</a> <a class="btn" href="#">Action</a>
-							</p>
-						</div>
-					</div>
+				<!-- /.box-header -->
+				<div class="box-body no-padding" style="display: block;height:120px;">
+					<p v-html="getChinese(note[3])"></p>
+					<span>创建时间:&nbsp;{{moment(Number(note[2]))
+						.format('YYYY-MM-DD HH:mm:ss')}}
+					</span>
 				</div>
-				<div class="col-md-4 column">
-					<div class="thumbnail">
-						<img alt="300x200" src="images/default.jpg" />
-						<div class="caption">
-							<h3>
-								Thumbnail label
-							</h3>
-							<p>
-								Cras justo odio, dapibus ac facilisis in, egestas eget quam. Donec id elit non mi porta gravida at eget metus. Nullam id dolor id nibh ultricies vehicula ut id elit.
-							</p>
-							<p>
-								 <a class="btn btn-primary" href="#">Action</a> <a class="btn" href="#">Action</a>
-							</p>
-						</div>
-					</div>
+				<!-- /.box-body -->
+				<div class="box-footer text-center" style="display: block;">
+					<a target="_blank" v-bind:href="'public/next.html?id='+note[0]">查看详细</a>
+				</div>
+				<!-- /.box-footer -->
 			</div>
+			<!--/.box -->
 		</div>
 	</div>
-	
-	<div class="row clearfix">
-			<div class="row clearfix">
-				<div class="col-md-4 column">
-					<h2>
-						Heading
-					</h2>
-					<p>
-						Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.
-					</p>
-					<p>
-						 <a class="btn" href="#">View details »</a>
-					</p>
-				</div>
-				<div class="col-md-4 column">
-					<h2>
-						Heading
-					</h2>
-					<p>
-						Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.
-					</p>
-					<p>
-						 <a class="btn" href="#">View details »</a>
-					</p>
-				</div>
-				<div class="col-md-4 column">
-					<h2>
-						Heading
-					</h2>
-					<p>
-						Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui.
-					</p>
-					<p>
-						 <a class="btn" href="#">View details »</a>
-					</p>
-				</div>
-			</div>
 	</div>
-	
+
 	<div class="row">
 		<div class="col-md-12 text-center footer">
 		 <span class="common">
@@ -206,17 +137,92 @@
 		</div>
 	</div>	
 </div><!--主内容区域结束-->
+</body>
 	<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
 	<script type="text/javascript" src="js/jquery.min.js"></script>
 	<!-- 包括所有已编译的插件 -->
 	<script type="text/javascript" src="js/bootstrap.min.js"></script>
 	<script src="js/jquery.scrollToTop.min.js"></script>
-    <script type="text/javascript">
-    		//返回顶部代码
-            $(function() {
+	<script type="text/javascript" src="js/AdminLTE/dist/js/app.js"></script>
+	<script src="js/qiao.js"></script>
+	<script src="js/moment.min.js"></script>
+	<script src="js/vuejs/vue.min.js"></script>
+	<script type="text/javascript">
+        $(function() {
+            getNextNotes(data.index,function () {
                 $("#toTop").scrollToTop(800);
-            });		
-    </script>
-</body>
+                getNoteContent(data.index=data.index,function () {
+                    qiao.end(function () {
+                        if(data.index < data.pageCount && data.index < 20 )
+                            getNoteContent(data.index+1);
+                    });
+                });
+            });
+        });
 
+        var data = {
+            index:1,
+            notes:[],
+            pageCount:1,
+            imgs:['images/tu1.jpg','images/tu2.jpg','images/tu3.jpg'],
+            tmp:[]
+        }
+
+        var app = new Vue({
+            el:"#app",
+            data:data
+        });
+
+        var getNextNotes = function (index,callback) {
+            $.ajax({
+                type:'post',
+                url:'getLuceneNotes',
+                data:{pageSize:3,curPage:index},
+                success:function (result) {
+                    if(typeof result.notes !== "undefined"){
+                        data.notes = result.notes;
+                        data.index = result.curPage;
+                        data.pageCount = result.pageCount;
+                    }
+                },
+                complete:function () {
+                    if(typeof callback === "function"){
+                        callback();
+                    }
+                }
+            })
+        }
+
+        var getNoteContent = function (index ,callback) {
+            $.ajax({
+                type:'post',
+                url:'getSimpleNotes',
+                data:{pageSize:3,curPage:index},
+                success:function (result) {
+                    if(result.notes !== "undefined" ) {
+                        data.index = result.curPage;
+                        data.pageCount = result.pageCount;
+                        $.each(result.notes,function () {
+                            data.tmp.push(this);
+                        });
+                    }
+                },
+                complete:function () {
+                    if(typeof callback === "function"){
+                        callback();
+                    }
+                }
+            })
+        }
+        //去除字符串里面的html标签
+        var getChinese =  function (str) {
+//            var str = str.replace(/[\u0000-\u00FF]/ig, '');//匹配非中文
+
+//            str = str.replace(/配置/ig, "<font color='red'>"+'配置'+"</font>");
+            if(str.length > 80) {
+                return str.substring(0, 80) + '…';
+            }
+            return str;
+        }
+	</script>
 </html>

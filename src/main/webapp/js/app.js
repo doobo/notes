@@ -14,11 +14,11 @@ var CodeMirrorButton = function(context) {
 
                 }
 			},function(){
-				var codeTxt = codeMirrorEditor.getValue();
+                var codeTxt = codeMirrorEditor.getValue();
 				codeTxt = $("#editor").text(codeTxt).html();
-				codeTxt = '<pre class="prettyprint linenums Lang-js">'+codeTxt+'</pre><br /><br/>';
-                // console.log(codeTxt);
-                codeTxt = $('#summernote').summernote('code') + codeTxt;
+				codeTxt = $('#summernote').summernote('code')
+					+'<pre class="prettyprint linenums Lang-js">'+codeTxt+'</pre><br />';
+                //console.log(codeTxt);
                 context.invoke('code', codeTxt);
                 PR.prettyPrint();
 			    return true;
@@ -33,9 +33,9 @@ var tobr = function(context) {
 	// create button
 	var button = ui.button({
 		contents: '<span class="fa fa-arrow-down"></span>',
-		tooltip: '换行/下一行',
+		tooltip: '未尾换行/下一行',
 		click: function() {
-		 codeTxt = $('#summernote').summernote('code') + '<br />';
+		 codeTxt = $('#summernote').summernote('code')+'<br />';
          context.invoke('code', codeTxt);
 		}
 	});

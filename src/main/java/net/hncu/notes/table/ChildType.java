@@ -19,6 +19,22 @@ public class ChildType {
 
     private Date firstTime;
 
+    public ChildType() {
+    }
+
+    public ChildType(Integer id, String typename) {
+        this.id = id;
+        this.typename = typename;
+    }
+
+    public ChildType(String typename, String description, Integer mainTypeID, Integer userID) {
+        this.typename = typename;
+        this.description = description;
+        this.mainType = new MainType(mainTypeID);
+        this.user = new User(userID);
+        this.firstTime = new Date();
+    }
+
     public Integer getId() {
         return id;
     }
@@ -65,5 +81,17 @@ public class ChildType {
 
     public void setFirstTime(Date firstTime) {
         this.firstTime = firstTime;
+    }
+
+    @Override
+    public String toString() {
+        return "ChildType{" +
+                "id=" + id +
+                ", typename='" + typename + '\'' +
+                ", description='" + description + '\'' +
+                ", mainType=" + mainType.getId() +
+                ", user=" + user +
+                ", firstTime=" + firstTime +
+                '}';
     }
 }

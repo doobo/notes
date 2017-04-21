@@ -9,13 +9,13 @@
             <generator class="native" />
         </id>
         <property name="typename" type="java.lang.String">
-            <column name="TYPENAME" />
+            <column name="TYPENAME"  unique="true" length="40" not-null="true"/>
         </property>
         <property name="description" type="java.lang.String">
             <column name="DESCRIPTION" />
         </property>
         <many-to-one name="user" class="net.hncu.notes.table.User" fetch="join">
-            <column name="USER_ID" />
+            <column name="USER_ID" not-null="true"/>
         </many-to-one>
         <property name="firstTime" type="timestamp">
             <column name="FIRSTTIME" />

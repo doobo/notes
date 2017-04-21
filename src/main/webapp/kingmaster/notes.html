@@ -1,0 +1,315 @@
+<!--笔记列表管理-->
+<div class="col-sm-12" id="app"
+	 style="margin-bottom: -20px;" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+	<div class="box box-primary">
+		<div class="box-header with-border ui-sortable-handle" style="cursor: move;">
+			<div class="pull-left">
+				<label class="btn btn-primary fa  fa-check" onclick="changCheckAll(1)">审核通过</label>
+				<label class="btn btn-primary fa fa-close" onclick="changCheckAll(0)">不审核</label>
+				<label class="btn btn-primary fa fa-unlock" onclick="changShareAll(0)">分享</label>
+				<label class="btn btn-primary fa fa-unlock-alt" onclick="changShareAll(1)">不分享</label>
+				<label class="btn btn-primary fa fa-search">查询</label>
+			</div>
+			<div class="pull-right">
+				<button type="button" id="btn_coll" class="btn btn-box-tool" data-widget="collapse">
+					<i class="fa fa-minus"></i></button>
+			</div>
+			<!-- /.box-tools -->
+		</div>
+		<!-- /.box-header -->
+		<div class="box-body row">
+			<div class="form-group col-sm-2">
+				<label>所属类别:</label>
+				<select class="form-control">
+					<option>全部</option>
+					<option>JavaSE基础</option>
+				</select>
+			</div>
+
+			<div class="form-group col-sm-2">
+				<label>审核状态:</label>
+				<select class="form-control">
+					<option>全部</option>
+					<option>已审核</option>
+					<option>未审核</option>
+				</select>
+			</div>
+			<div class="form-group col-sm-2">
+				<label>分享状态:</label>
+				<select class="form-control">
+					<option>全部</option>
+					<option>已分享</option>
+					<option>未分享</option>
+				</select>
+			</div>
+
+			<div class="form-group col-sm-2">
+				<label>开始时间:</label>
+				<input  type="text" class="form-control qdate" id="dtime" placeholder="请输入开始时间...">
+			</div>
+
+			<div class="form-group col-sm-2">
+				<label>结束时间:</label>
+				<input  type="text" class="form-control qdate" placeholder="请输入结束时间...">
+			</div>
+
+			<div class="form-group col-sm-2">
+				<label>按标题名称查询:</label>
+				<input type="text" class="form-control" placeholder="请输入标题名称...">
+			</div>
+		</div><!--The box-body End -->
+		<div class="box">
+			<table class="table table-hover">
+				<thead>
+				<tr>
+					<th><input type="checkbox"  name="checkAll"
+					 onclick="checkAll('checkAll','childBox')"/></th>
+					<th>笔记标题</th>
+					<th>创建者</th>
+					<th>所属类别</th>
+					<th>审核状态</th>
+					<th>分享状态</th>
+					<th>创建日期</th>
+					<th>管理工具</th>
+				</tr>
+				</thead>
+				<tbody>
+				<tr v-for="(note,index) in notes">
+					<td><input type="checkbox" name="childBox"
+							   v-bind:value="index" v-model="indexs"/></td>
+					<td><a v-bind:href="'../static/next.html?id='+note[0]"
+						  class="next" target="_blank">{{note[1]}}</a></td>
+					<td>{{note[3]}}</td>
+					<td>{{note[2]}}</td>
+					<td  v-if=" note[4] === 0">未审核</td>
+					<td  v-if=" note[4] === 1">审核通过</td>
+					<td  v-if=" note[5] === 0">分享</td>
+					<td  v-if=" note[5] === 1">未分享</td>
+					<td>{{moment(note[6]).format('YYYY-MM-DD HH:mm:ss')}}</td>
+					<td>
+						<button @click="share(index,1)" v-if="note[5] === 0" class="btn btn-default btn-xs fa fa-unlock-alt">取消分享</button>
+						<button @click="share(index,0)" v-if="note[5] === 1" class="btn btn-default btn-xs fa fa-unlock">分享笔记</button>
+						<button @click="check(index,1)" v-if="note[4] === 0" class="btn btn-default btn-xs fa  fa-check">通过审核</button>
+						<button @click="check(index,0)" v-if="note[4] === 1" class="btn btn-default btn-xs fa fa-close">取消审核</button>
+						<a v-bind:href="'../static/update.html?nid='+note[0]"
+						   target="_blank" class="btn btn-default btn-xs fa fa-edit">修改</a>
+						<button @click="status(index,1)" class="btn btn-default btn-xs fa fa-search">删除</button>
+					</td>
+				</tr>
+				</tbody>
+			</table>
+			<!--</div>-->
+			<div style="text-align:center;">
+				<ul id="pagination-demo" class="pagination-sm"></ul>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	//获取指定页面的参数
+    var nextPage = function(nextPage,pageSize,callback){
+        $.ajax({
+            type:"post",
+            url:'getSimpleNotes',
+            data:{
+                curPage:nextPage,
+                pageSize:pageSize
+            },
+            success:function (result) {
+                data.notes = result.notes;
+                data.pageSize = result.pageSize;
+                data.curPage = result.curPage;
+                data.pageCount = result.pageCount;
+                data.count = result.count;
+            },
+            complete:function () {
+                if(typeof callback === "function"){
+                    callback();
+                }
+            }
+        });
+    }
+
+    $(function () {
+	    nextPage(1,5,function () {
+            qiao.bs.bsdate('.qdate');
+            $('#pagination-demo').twbsPagination({
+                totalPages: data.pageCount,
+                visiblePages: 7,
+                first:'首页',
+				last:'末页',
+				prev:'上一页',
+				next:'下一页',
+                onPageClick: function (event, page) {
+                    nextPage(page,data.pageSize,function () {
+                        $("input[name=checkAll]")
+                            .prop("checked", false);
+                        data.indexs = [];
+                    });
+                }
+            });
+        });
+    });
+
+    /**
+     * 复选框全选或全不选的函数
+     * @param {Object} allName 全选框的name，字符参数-'name'
+     * @param {Object} childName 子复选框的name，字符参数-'name'
+     */
+    function checkAll(allName, childName) {
+        var isChecked = $("input[name='" + allName + "']").prop("checked");
+        if(isChecked){
+            data.indexs = [];
+            $("input[name='" + childName + "']").each(function() {
+                //$(this).prop("checked", isChecked);
+                data.indexs.push($(this).attr("value"));
+            });
+		}else{
+            data.indexs = [];
+		}
+    }
+
+    var data = {
+        message:'hello world!',
+        pageSize:5,
+        pageCount:1,
+        curPage:1,
+        count:0,
+        notes:[],
+        indexs:[]
+    };
+
+    var vue = new Vue({
+        el: '#app',
+        data: data,
+		methods:{
+            del:function (index) {
+                data.notes.splice(index, 1);
+            },
+            check:function (index,status) {
+                changeCheck(index,status);
+            },
+			share:function (index,status) {
+				changeShare(index,status);
+            },
+			status:function (index,status) {
+				changeStatus(index,status);
+            }
+		}
+    });
+
+    var changeCheck = function (index,status) {
+		var sendData = {
+		    id:data.notes[index][0],
+			check:status
+		};
+		$.ajax({
+		    type:'post',
+			url:'changeCheck',
+			data:sendData,
+			success:function (result) {
+				if(result){
+                    vue.$set(data.notes[index],4,status);
+				}
+            }
+		});
+    };
+
+    var changeShare = function (index,status) {
+        var sendData = {
+            id:data.notes[index][0],
+            share:status
+        };
+        $.ajax({
+            type:'post',
+            url:'changeShare',
+            data:sendData,
+            success:function (result) {
+                if(result){
+                    vue.$set(data.notes[index],5,status);
+                }
+            }
+        });
+    };
+
+    var changeStatus = function (index,status) {
+        var sendData = {
+            id:data.notes[index][0],
+            status:status
+        };
+        $.ajax({
+            type:'post',
+            url:'changeStatus',
+            data:sendData,
+            success:function (result) {
+                if(result){
+                    data.notes.splice(index, 1);
+                    data.indexs = [];
+                    $("input[name=checkAll]")
+                        .prop("checked", false);
+                }
+            }
+        });
+    };
+
+    var changCheckAll = function (check) {
+        var tmp = {title:'',msg:''};
+        if(check === 1 ){
+            tmp.title = '批量审核';
+			tmp.msg = '确认审核通过所选项？';
+		}else{
+            tmp.title = '批量取消审核';
+			tmp.msg = '确认取消审核所选项？';
+		}
+		qiao.bs.confirm(tmp
+		,function () {
+			$.each(data.indexs,function () {
+                if(data.notes[this[0]][4] !== check)
+				changeCheck(this[0],check);
+            })
+        }),function () {
+
+        }
+    };
+
+    var changShareAll = function (share) {
+        var tmp = {title:'',msg:''};
+        if(share === 1 ){
+            tmp.title = '批量分享';
+			tmp.msg = '确认分享所选项？';
+        }else{
+            tmp.title = '批量取消分享';
+			tmp.msg = '确认取消审核所选项？';
+        }
+		qiao.bs.confirm(tmp
+		,function () {
+			$.each(data.indexs,function () {
+			    if(data.notes[this[0]][5] !== share)
+				changeShare(this[0],share);
+            })
+        }),function () {
+
+        }
+    }
+
+
+    var changStatusAll = function (status) {
+        var tmp = {title:'',msg:''};
+        if(status === 1 ){
+            tmp.title = '批量删除';
+			tmp.msg = '确认删除所选项？';
+        }else{
+            tmp.title = '批量删除';
+			tmp.msg = '确认删除所选项？';
+        }
+        qiao.bs.confirm(tmp
+            ,function () {
+                $.each(data.indexs,function () {
+                   changeStatus(this[0],status)
+                })
+            }),function () {
+
+        }
+    }
+
+</script>

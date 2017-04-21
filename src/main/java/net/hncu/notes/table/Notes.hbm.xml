@@ -9,25 +9,25 @@
             <generator class="native" />
         </id>
         <property name="title" type="java.lang.String">
-            <column name="TITLE" />
+            <column name="TITLE"  length="60" not-null="true"/>
         </property>
         <many-to-one name="childType" class="net.hncu.notes.table.ChildType" fetch="join">
-            <column name="CHILDTYPE_ID" />
+            <column name="CHILDTYPE_ID" not-null="true" />
         </many-to-one>
         <many-to-one name="user" class="net.hncu.notes.table.User" fetch="join">
-            <column name="USER_ID" />
+            <column name="USER_ID"  not-null="true"/>
         </many-to-one>
         <property name="description" type="text">
             <column name="DESCRIPTION" length = "16777216"/>
         </property>
         <property name="check" type="java.lang.Integer">
-            <column name="NOTE_CHECK" />
+            <column name="NOTE_CHECK" default="0"/>
         </property>
         <property name="status" type="java.lang.Integer">
-            <column name="STATUS" />
+            <column name="STATUS"  default="0"/>
         </property>
         <property name="share" type="java.lang.Integer">
-            <column name="SHARE" />
+            <column name="SHARE"  default="0"/>
         </property>
         <property name="firstTime" type="timestamp">
             <column name="FIRSTTIME" />

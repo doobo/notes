@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" lang="zh_CN">
+    <title>新建笔记</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 引入 Bootstrap -->
+    <link rel="stylesheet" href="../css/bootstrap.min.css"/>
+    <!-- HTML5 Shim 和 Respond.js 用于让 IE8 支持 HTML5元素和媒体查询 -->
+    <!-- 注意： 如果通过 file://  引入 Respond.js 文件，则该文件无法起效果 -->
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="../js/html5shiv.js"></script>
+    <script type="text/javascript" src="../js/respond.min.js"></script>
+    <![endif]-->
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+
+    <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../js/qiao.js"></script>
+    <script type="text/javascript" src="../js/code-prettify/prettify.js"></script>
+    <link rel="stylesheet" href="../js/code-prettify/prettify.css"/>
+    <script type="text/javascript" src="../js/jquery.scrollToTop.min.js"></script>
+    <!--AadminLTE基本资源-->
+    <link rel="stylesheet" href="../css/font-awesome.min.css"/>
+    <script type="text/javascript" src="../js/AdminLTE/dist/js/app.js"></script>
+    <link rel="stylesheet" href="../css/style.css"/>
+</head>
+<body>
+<div class="container" id="app">
+    <div class="row clearfix" style="margin-bottom: -15px;">
+        <a href="#top" id="toTop"></a>
+        <nav class="navbar navbar-inverse" role="navigation">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">个人学习笔记网</a>
+            </div>
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li>
+                        <a href="../index.html">首页</a>
+                    </li>
+                    <li>
+                        <a href="#">新建笔记</a>
+                    </li>
+                    <li>
+                        <a href="allType.html">全部分类</a>
+                    </li>
+                    <li>
+                        <a href="#">高级搜索</a>
+                    </li>
+                </ul>
+                <form class="navbar-form navbar-left" role="search">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="搜索笔记..."/>
+                    </div>
+                    <button type="submit" class="btn btn-default">搜索</button>
+                </form>
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="../kingmaster/index.html">登录</a>
+                    </li>
+                    <li>
+                        <a href="#">网站导航</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+    <!--The Header End-->
+
+    <div class="row">
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title"><a class="next" v-bind:href="'list.html?cid='+data.note[6]"
+                                         target="_blank">{{data.note[3]}}</a></h3>
+                <div class="box-tools pull-right">
+                    <a href="javascript:getPreNote();"
+                      v-show="data.pre" class="btn btn-box-tool" ><i class="fa fa-chevron-left"></i></a>
+                    <a href="javascript:getNextNote()"
+                      v-show="data.next" class="btn btn-box-tool"><i class="fa fa-chevron-right"></i></a>
+                </div>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body no-padding">
+                <div class="mailbox-read-info">
+                    <h3>{{data.note[0]}}</h3>
+                    <h5>作者：{{data.note[1]}}
+                        <span class="mailbox-read-time pull-right">创建日期：{{moment(note[2]).format('YYYY-MM-DD HH:mm:ss')}}</span></h5>
+                </div>
+                <!-- /.mailbox-read-info -->
+                <div class="mailbox-controls with-border">
+                <p v-html="data.note[4]"></p>
+
+                </div>
+                <!-- /.mailbox-controls -->
+                <div class="mailbox-read-message">
+
+                </div>
+                <!-- /.mailbox-read-message -->
+            </div>
+            <!-- /.box-body -->
+            <!-- /.box-footer -->
+            <div class="box-footer">
+                <div class="text-center">
+                    <button type="button"
+                           v-show="data.pre" class="btn btn-default" onclick="getPreNote()">
+                        <i class="fa fa-arrow-left"></i> 上一条</button>
+                    <button v-show="data.next" type="button" class="btn btn-default" onclick="getNextNote();">下一条&nbsp;
+                        <i class="fa  fa-arrow-right"></i></button>
+                </div>
+            </div>
+            <!-- /.box-footer -->
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 text-center footer">
+					<span class="common">
+			 	Copyright &copy;2017 湖南城市学院
+			 	<a class="common" href="http://www.hncu.net" target="_blank">hncu.net</a>
+			 	All Rights Reserved.
+			 </span>
+        </div>
+    </div>
+    <!--底部声明结束-->
+</div>
+<script type="text/javascript" src="../js/app.js"></script>
+<script type="text/javascript" src="../js/qiao.js"></script>
+<script src="../js/moment.min.js"></script>
+<script type="text/javascript" src="../js/vuejs/vue.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+        data.id = qiao.search('id');
+        if(typeof qiao.search('id') === "undefined"){
+            qiao.bs.alert('发生未知错误');
+        }else {
+            getNote(data.id,function () {
+                $("#toTop").scrollToTop(800);
+            });
+        }
+    })
+
+    data = {
+        id:1,
+        note:[],
+        next:true,
+        pre:true
+    }
+
+    var getNote = function (id,callback) {
+        $.ajax({
+            type:'post',
+            url:'getNoteByID',
+            data:{id:id},
+            success:function (result) {
+                data.note = result[0];
+                console.log(data.note);
+            },
+            complete:function () {
+                if(typeof callback == "function"){
+                    callback();
+                }
+            }
+        });
+    }
+
+    var getNextNote = function () {
+        if(!data.next){
+            qiao.bs.alert('没有下一页哦！');
+            return false;
+        }else
+        $.ajax({
+            type:'post',
+            url:'getNextNote',
+            data:{time:data.note[2],nid:data.note[5],cid:data.note[6]},
+            success:function (result) {
+                if(result.length === 0 ){
+                    data.next = false;
+                    qiao.bs.alert('没有下一页哦！');
+                }else{
+                    data.note = result[0];
+                    data.pre = true;
+                }
+            },
+            complete:function () {
+                $("#toTop").click();
+            }
+        });
+    }
+
+    var getPreNote = function () {
+        if(!data.pre){
+            qiao.bs.alert('没有上一页哦！');
+            return;
+        }else
+        $.ajax({
+            type:'post',
+            url:'getPreNote',
+            data:{time:data.note[2],nid:data.note[5],cid:data.note[6]},
+            success:function (result) {
+                if(result.length === 0){
+                    data.pre = false;
+                    qiao.bs.alert('没有上一页哦！');
+                }else {
+                    data.note = result[0];
+                    data.next = true;
+                }
+            },
+            complete:function () {
+                $("#toTop").click();
+            }
+        });
+    }
+
+    var vue = new Vue({
+        el:"#app",
+        data:data
+    });
+</script>
+</body>
+</html>
