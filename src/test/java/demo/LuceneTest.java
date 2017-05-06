@@ -20,7 +20,7 @@ public class LuceneTest {
     @Test
     public void testSearch(){
        NotesLucene nt = new NotesLucene();
-       nt.getNoteDocumentByTerm(2);
+       nt.getNoteDocumentByID(2);
     }
 
 

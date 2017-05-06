@@ -7,8 +7,6 @@
 		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.3.xsd
 		http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.3.xsd">
-
-
 	<context:component-scan base-package="net.hncu"
 		use-default-filters="false">
 		<context:include-filter type="annotation"
@@ -16,15 +14,36 @@
 		<context:include-filter type="annotation"
 			expression="org.springframework.web.bind.annotation.ControllerAdvice" />
 	</context:component-scan>
-
 	<!-- 配置视图解析器 -->
 	<bean
 		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
 		<property name="prefix" value="/WEB-INF/views/"></property>
 		<property name="suffix" value=".jsp"></property>
 	</bean>
-
 	<mvc:default-servlet-handler />
+	<mvc:interceptors>
+		<!-- 配置拦截器(不)作用的路径 -->
+		<mvc:interceptor>
+			<mvc:mapping path="/static/" />
+			<mvc:mapping path="/static/**" />
+			<mvc:mapping path="/manager/" />
+			<mvc:mapping path="/manager/**" />
+			<bean class="net.hncu.notes.interceptor.ManagerInterceptor"></bean>
+		</mvc:interceptor>
+		<mvc:interceptor>
+			<mvc:mapping path="/kingmaster/" />
+			<mvc:mapping path="/kingmaster/**" />
+			<mvc:exclude-mapping path="/kingmaster/*.js" />
+			<mvc:exclude-mapping path="/kingmaster/*.css" />
+			<bean class="net.hncu.notes.interceptor.MasterInterceptor"></bean>
+		</mvc:interceptor>
+
+		<mvc:interceptor>
+			<mvc:mapping path="/system/" />
+			<mvc:mapping path="/system/**" />
+			<bean class="net.hncu.notes.interceptor.SystemInterceptor"></bean>
+		</mvc:interceptor>
+	</mvc:interceptors>
 
 	<mvc:annotation-driven>
 		<mvc:message-converters register-defaults="true">

@@ -1,0 +1,73 @@
+<style>
+    textarea{outline:none;resize:none;}
+</style>
+<div id="tmp"  xmlns:v-bind="http://www.w3.org/1999/xhtml"
+     style="width: 100%;height: 250px;margin-top: -13px;margin-bottom: -25px;">
+    <form onsubmit="return false;">
+    <div class="form-group">
+        <input type="hidden" v-bind:value="child[0]">
+    </div>
+    <div class="form-group">
+        <label>分类名称</label>
+        <input type="text" class="form-control" name="title" v-model="child[1]"
+               placeholder="分类名称……" onkeyup="check_title(this)">
+        <span style="color: red;" v-text="e_title">测试</span>
+    </div>
+    <script>
+       var check_title = function (obj) {
+           if(!verifyStringLength($.trim($(obj).val()),3,20)){
+               tmp.e_title = '标题的长度范围3-20';
+               return;
+           }
+           if(!verify($.trim($(obj).val()),'nickname')){
+               tmp.e_title = '只能包含字母、数字、下划线、空格、中文(不含中文标点符号)';
+               return;
+           }
+           if(isEmpty($.trim($(obj).val()))){
+               tmp.e_title = '标题不能为空……';
+               return;
+           }else{
+               tmp.e_title = '';
+           }
+       }
+
+       var check_desc = function (obj) {
+           if(!verifyStringLength($(obj).val(),5,100)){
+               tmp.e_desc = '描述长度范围5-100';
+           }else{
+               tmp.e_desc = '';
+           }
+       }
+    </script>
+    <div class="form-group">
+        <label>分类描述</label>
+        <textarea class="form-control" rows="4" name="desc" v-model="child[2]"
+                  placeholder="分类描述……" onkeyup="check_desc(this)"></textarea>
+        <span style="color: red;" v-text="e_desc">类别描述提示</span>
+    </div>
+    </form>
+</div>
+<script>
+    var getChildTypeById = function (id) {
+        if(id == null || id.length === ''){
+            return;
+        }
+        $.ajax({
+            type:'post',
+            url:'getChildTypeByID',
+            data:{cid:id},
+            success:function (result) {
+                tmp.child = result;
+            }
+        });
+    };
+    var tmp = new Vue({
+        el: '#tmp',
+        data: {e_desc:'标题的长度范围5-100',e_title:'描述长度范围3-20',child:[]},
+        methods:{
+        }
+    });
+    $(function () {
+        getChildTypeById(vue.tmp_id);
+    });
+</script>

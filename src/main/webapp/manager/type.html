@@ -1,0 +1,268 @@
+<!--笔记类别管理-->					
+<div class="col-sm-12" id="app">
+	<div class="box box-primary">
+		<div class="box-header">
+			<h3 class="box-title">笔记子分类列表</h3>
+			<div class="box-tools">
+				<div class="input-group input-group-sm" style="width: 150px;">
+					<input type="text" name="word" @keyup.enter="key()"
+						   class="form-control pull-right" placeholder="分类名搜索">
+					<div class="input-group-btn">
+						<button  onclick="toSearch()"  class="btn btn-primary fa fa-search"></button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script>
+			var toSearch = function () {
+			    var info = {};
+				info.wd = $.trim($("input[name=word]").val());
+				if(isEmpty(info.wd)){
+				    delete info.wd;
+				}
+				info.curPage = 1;
+				info.pageSize = data.info.pageSize;
+				getSearchResult(info,function () {
+                    resetPage();
+                });
+            }
+
+            //获取符合条件的搜索结果
+            var getSearchResult = function (info,callback) {
+                $.ajax({
+                    type:'post',
+                    url:'getSearchChildType',
+                    data:info,
+                    success:function (result) {
+                        data.childTypes = result.childTypes;
+                        data.pageSize = result.pageSize;
+                        data.curPage = result.curPage;
+                        data.pageCount = result.pageCount;
+                        data.count = result.count;
+                        $("input[name=checkAll]")
+                            .prop("checked", false);
+                        data.indexs = [];
+                    },
+                    complete:function () {
+                        if(typeof callback === "function"){
+                            callback();
+                        }
+                        data.info = info;
+                    }
+                });
+            }
+
+            //重新设置页码
+            var resetPage = function () {
+                $("#pagination").html('');
+                var t_id = 'page_id'+new Date().getTime();
+                if(data.pageCount > 1){
+                    $('#pagination').html(
+                        '<ul id="'+t_id+'" class="pagination-sm"></ul>');
+                    $("#"+t_id).twbsPagination({
+                        totalPages: data.pageCount,
+                        visiblePages: 7,
+                        first:'首页',
+                        last:'末页',
+                        prev:'上一页',
+                        next:'下一页',
+                        onPageClick: function (event, page) {
+                            var el_li =
+                                '<li class="disabled">' +
+                                '<a class="page-link">总页数:' +
+                                data.pageCount+'</a></li>';
+                            $("#"+t_id).append(el_li);
+                            if(page === data.curPage) return;
+                            data.info.curPage = page;
+                            getSearchResult(data.info,function () {
+                                $("input[name=checkAll]")
+                                    .prop("checked", false);
+                                data.indexs = [];
+                            });
+                        }
+                    });
+                }
+            }
+		</script>
+		<!-- /.box-header -->
+		<div class="box-body table-responsive no-padding">
+		<table class="table table-hover">
+			<tbody>
+				<tr>
+					<th>分类名称</th>
+					<th>所属主分类</th>
+					<th>创建日期</th>
+					<th>管理工具</th>
+				</tr>
+				<tr v-for="(child , index) in childTypes">
+				<td>{{child[1]}}</td>
+				<td>{{child[3]}}</td>
+				<td>{{moment(child[4]).format('YYYY-MM-DD HH:mm:ss')}}</td>
+				<td>
+					<button @click="updateChildType(child[0],index)" class="btn btn-default btn-xs fa fa-edit">子类信息</button>
+					<button @click="updateMainType(child[0],index)" class="btn btn-default btn-xs fa fa-edit">主类信息</button>
+				</td>
+				</tr>
+			</tbody>
+		</table>
+			<script>
+				var updateChild = function (index) {
+                    qiao.bs.dialog({
+                        id:'childType',
+                        url:'./childType.htm',
+                        title:'修改子类信息',
+						okbtn:'修改'
+                    },function(){
+                        if(tmp.e_title.length !=0 || tmp.e_desc.length != 0){
+                            alert('信息不符合要求，更新失败！');
+                            return false;
+						}else{
+                            var el = $("#childType");
+                            var info = {};
+                            info.cid = $(el).find("input[type=hidden]").val();
+                            info.title = $.trim($(el).find("input[name=title]").val());
+                            info.desc = $.trim($(el).find("textarea[name=desc]").val());
+                            updateType(info,'updateChildType',function (result) {
+								vue.$set(data.childTypes[index],1,info.title);
+                            });
+                            return true;
+						}
+						return false;
+                    });
+                }
+
+                var updateMain = function (index) {
+                    qiao.bs.dialog({
+                        id:'mainType',
+                        url:'./mainType.htm',
+                        title:'修改主类信息',
+                        okbtn:'修改'
+                    },function(){
+                        if(tmp.e_title.length !=0 || tmp.e_desc.length != 0){
+                            alert('信息不符合要求，更新失败！');
+                            return false;
+                        }else {
+                            var el = $("#mainType");
+                            var info = {};
+                            info.mid = $(el).find("input[type=hidden]").val();
+                            info.title = $.trim($(el).find("input[name=title]").val());
+                            info.desc = $.trim($(el).find("textarea[name=desc]").val());
+                            updateType(info,'updateMainType',function (result) {
+                                getSearchResult(data.info,function () {
+                                    $("input[name=checkAll]")
+                                        .prop("checked", false);
+                                    data.indexs = [];
+                                });
+//                                vue.$set(data.childTypes[index],3,info.title);
+                            });
+                            return true;
+                        }
+                    });
+                }
+                var updateType = function (data,url,callback) {
+					$.ajax({
+					    url:url,
+						type:'post',
+						data:data,
+						success:function (result) {
+							if(result){
+							    if(typeof callback == "function"){
+							        callback(result);
+								}
+							}else {
+							    qiao.bs.alert('权限不够或分类已存在，更新失败');
+							}
+                        }
+					});
+                }
+			</script>
+		<!--</div>-->
+		<div style="text-align:center;" id="pagination">
+			<ul id="pagination-demo" class="pagination-sm"></ul>
+		</div>
+		</div>
+	</div>
+</div>
+<script>
+    //获取指定页面的参数
+    var nextPage = function(nextPage,pageSize,callback){
+        $.ajax({
+            type:"post",
+            url:'getSimpleChildType',
+            data:{
+                curPage:nextPage,
+                pageSize:pageSize
+            },
+            success:function (result) {
+                data.childTypes = result.childTypes;
+                data.pageSize = result.pageSize;
+                data.curPage = result.curPage;
+                data.pageCount = result.pageCount;
+                data.count = result.count;
+            },
+            complete:function () {
+                if(typeof callback === "function"){
+                    callback();
+                }
+            }
+        });
+    }
+
+    var init = function () {
+        nextPage(1,6,function () {
+            if(data.pageCount > 1)
+                $('#pagination-demo').twbsPagination({
+                    totalPages: data.pageCount,
+                    visiblePages: 7,
+                    first:'首页',
+                    last:'末页',
+                    prev:'上一页',
+                    next:'下一页',
+                    onPageClick: function (event, page) {
+                        if(page === data.curPage) return;
+                        nextPage(page,data.pageSize,undefined);
+                    }
+                });
+        });
+    }
+
+    var data = {
+        pageSize:5,
+        pageCount:1,
+        curPage:1,
+        count:0,
+        childTypes:[],
+		tmp_id:1,
+		info:{curPage:1,pageSize:5,wd:''}
+    }
+
+    var vue = new Vue({
+        el: '#app',
+        data: data,
+        methods:{
+            del:function (index) {
+                data.childTypes.splice(index, 1);
+            },
+            check:function (index,status) {
+                vue.$set(data.childTypes[index],4,status);
+            },
+            updateChildType:function (id,index) {
+				data.tmp_id = id;
+				updateChild(index);
+            },
+			updateMainType:function (id,index) {
+				data.tmp_id = id;
+				updateMain(index);
+            },
+			key:function () {
+				toSearch();
+            }
+        }
+    });
+
+    $(function () {
+        getSearchResult(data.info,function () {
+            resetPage();
+        });
+    });
+</script>

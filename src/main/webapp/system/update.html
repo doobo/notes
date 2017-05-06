@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" lang="zh_CN">
+		<title>修改笔记</title>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<!-- 引入 Bootstrap -->
+		<link rel="stylesheet" href="../css/bootstrap.min.css" />
+		<!-- HTML5 Shim 和 Respond.js 用于让 IE8 支持 HTML5元素和媒体查询 -->
+		<!-- 注意： 如果通过 file://  引入 Respond.js 文件，则该文件无法起效果 -->
+		<!--[if lt IE 9]>
+		<script type="text/javascript" src="../js/html5shiv.js" ></script>
+		<script type="text/javascript" src="../js/respond.min.js" ></script>
+      <![endif]-->
+		<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+		<script type="text/javascript" src="../js/jquery.min.js"></script>
+
+		<!-- include codemirror (codemirror.css, codemirror.js, xml.js, formatting.js)-->
+		<link rel="stylesheet" href="../js/CodeMirror/lib/codemirror.css">
+		<link rel="stylesheet" href="../js/CodeMirror/theme/eclipse.css">
+
+		<script type="text/javascript" src="../js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="../js/qiao.js"></script>
+		<link rel="stylesheet" href="../css/summernote.css" />
+		<script type="text/javascript" src="../js/summernote.min.js"></script>
+		<script type="text/javascript" src="../js/summernote-zh-CN.js"></script>
+		<script type="text/javascript" src="../js/code-prettify/prettify.js"></script>
+		<link rel="stylesheet" href="../js/code-prettify/prettify.css" />
+		<link rel="stylesheet" href="../js/select2/select2.min.css" />
+		<script type="text/javascript" src="../js/select2/select2.min.js"></script>
+		<script type="text/javascript" src="../js/jquery.scrollToTop.min.js"></script>
+		<link rel="stylesheet" href="../css/style.css" />
+		<!--AadminLTE基本资源-->
+		<link rel="stylesheet" href="../css/font-awesome.min.css" />
+	</head>
+
+<body>
+<div class="container" id="app">
+<div class="row clearfix">
+	<a href="#top" id="toTop"></a>
+	<nav class="navbar navbar-inverse" role="navigation">
+		<div class="navbar-header">
+			<a class="navbar-brand" href="#">个人学习笔记网</a>
+		</div>
+		<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+			<ul class="nav navbar-nav">
+				<li>
+					<a href="../index.html">首页</a>
+				</li>
+				<li>
+					<a href="../static/index.html">新建笔记</a>
+				</li>
+				<li>
+					<a href="../public/allType.html">全部分类</a>
+				</li>
+				<li>
+					<a href="../public/search.html">高级搜索</a>
+				</li>
+			</ul>
+			<form class="navbar-form navbar-left" role="search">
+				<div class="form-group">
+					<input type="text" class="form-control" placeholder="搜索笔记..." />
+				</div> <button type="submit" class="btn btn-default">搜索</button>
+			</form>
+			<ul class="nav navbar-nav navbar-right">
+				<li>
+					<a href="javascript:nav_show();">网站导航</a>
+				</li>
+			</ul>
+		</div>
+	</nav>
+</div><!--The Header End-->
+	<script>
+        var nav_show = function () {
+            qiao.bs.dialog({
+                id : 'nav_index',
+                url :'../public/nav.htm',
+                head:false,
+                foot:false,
+                backdrop: true,
+                big : true
+            },function () {
+                return true;
+            });
+        }
+	</script>
+
+<div class="row clearfix" style="margin-bottom: -15px; margin-top: -15px;">
+	<div class="box box-primary">
+		<div class="box-header with-border">
+			<div class="text-center">
+				<h3 class="box-title pull-left">修改笔记</h3>
+			</div>
+			<div class="box-tools pull-right">
+				<button type="button" class="btn btn-box-tool" data-widget="collapse">
+					<i class="fa fa-minus"></i>
+				</button>
+			</div>
+		</div>
+		<!-- /.box-header -->
+		<div class="box-body">
+			<form class="form-inline text-center">
+				<div class="form-group" style="margin-bottom: 20px;">
+					<label>标题：</label>
+				</div>
+				<div class="form-group" style="margin-bottom: 20px;">
+					<input type="text" size="50"  name="title"
+						   class="form-control"
+						   placeholder="请输入笔记标题..." />
+				</div><br />
+
+				<div class="form-group">
+					<label>主分类：</label>
+				</div>
+				<div class="form-group">
+					<select id="mainType" class="js-example-data-array form-control">
+					</select>
+				</div>
+				<div class="form-group">
+					<a href="javascript:addMType()">添加</a>
+				</div>
+
+				<div class="form-group">
+					<label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;子分类：</label>
+				</div>
+				<div class="form-group">
+					<select id="childType" class="js-example-data-array form-control">
+					</select>
+				</div>
+				<div class="form-group">
+					<a href="javascript:addCHType();">添加</a>
+				</div>
+
+				<div class="form-group">
+					<label>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;分享状态：</label>
+				</div>
+				<div class="form-group">
+					<div class="btn-group-sm" id="share" data-toggle="buttons">
+						<label id="rd0" class="btn btn-default active" style="height: 27px;">
+						<input type="radio" name="share" class="toggle" value="0" checked="checked"> 分享
+					</label>
+						<label id="rd1" class="btn btn-default" style="height: 27px;">
+						<input type="radio" name="share" class="toggle" value="1">不分享
+					</label>
+					</div>
+				</div>
+			</form>
+		</div>
+
+		<div class="" >
+			<div class="summernote" id="summernote"></div>
+		</div>
+	</div>
+	<div class="row text-center" style="margin-bottom: 20px;">
+		<label class="btn btn-default" id="btn_view">预览</label>
+		<label class="btn btn-default" id="btn_edit">编辑</label>
+		<label class="btn btn-default" ng-click="saveData(1)" id="btn_save">修改</label>
+	</div>
+</div>
+<!--富文本编辑器结束-->
+<div class="row">
+	<div class="col-md-12 text-center footer">
+		<span class="common">
+	Copyright &copy;2017 湖南城市学院
+	<a class="common" href="http://www.hncu.net" target="_blank">hncu.net</a>
+	All Rights Reserved.
+ </span>
+	</div>
+</div>
+<!--底部声明结束-->
+</div>
+	</body>
+	<script type="text/javascript" src="../js/CodeMirror/lib/codemirror.js"></script>
+	<script type="text/javascript" src="../js/CodeMirror/mode/javascript/javascript.js"></script>
+	<script type="text/javascript" src="../js/CodeMirror/mode/xml/xml.js"></script>
+	<script type="text/javascript" src="../js/CodeMirror/mode/htmlmixed/htmlmixed.js"></script>
+	<script type="text/javascript" src="../js/CodeMirror/mode/xml/xml.js"></script>
+	<script type="text/javascript" src="../js/CodeMirror/addon/fold/xml-fold.js"></script>
+	<script type="text/javascript" src="../js/CodeMirror/addon/edit/closetag.js"></script>
+	<script type="text/javascript" src="../js/CodeMirror/addon/edit/closebrackets.js"></script>
+	<script type="text/javascript" src="../js/AdminLTE/dist/js/app.js"></script>
+	<script type="text/javascript" src="../js/app.js"></script>
+	<script type="text/javascript" src="../js/verify.js"></script>
+	<script type="text/javascript">
+        var mainData = [];
+        var childData = [];
+        //判读是否登录，没登录，重新加载
+        var is_login = function (url,callback) {
+            var url = url || '../isRoot';
+            $.ajax({
+                type:'post',
+                url:url,
+                success:function (result) {
+                    if(!result){
+                        location.reload();
+                        return false;
+                    }else {
+                        if(typeof callback == "function"){
+                            callback();
+                        }
+                        return true;
+                    }
+                }
+            });
+        }
+        $(function() {
+            is_login();
+            if(qiao.search('nid') !== undefined)
+            getNoteToUpdate( qiao.search('nid'),function () {
+                changSelect1(mid,function () {
+                    changSelect2(mid,cid);
+                    //返回顶部代码
+                    $("#toTop").scrollToTop(800);
+                });
+            });
+            else
+                window.location.href='404.html?url='
+					+encodeURIComponent(window.location.href);
+        });
+        var cid;
+        var mid;
+        var nid;
+        var getNoteToUpdate = function (id,callback) {
+            noteConf['height'] = 'auto';
+            noteConf['focus'] = false;
+            $('#summernote').summernote(noteConf);
+			$.ajax({
+			    type:'post',
+				url:'getNoteToUpdate',
+				data:{nid:id},
+				success:function (result) {
+					if(result.length !== "undefined" && result.length > 0){
+                        $("input[name=title]").val(result[0]);
+                        $('#summernote').summernote('code',result[4]);
+						cid = result[6];
+						mid = result[7];
+						nid = result[5];
+                        $("input[name='share']").eq(result[8])
+							.attr("checked","checked");
+                        $("#rd"+result[8]).click();
+					}else{
+                        window.location.href='404.html?url='
+                            +encodeURIComponent(window.location.href);
+					}
+                },
+                complete:function () {
+					if(typeof callback === "function"){
+                        callback();
+					}
+                }
+			})
+        }
+
+        //预览视图
+        $("#btn_view").click(function() {
+            var makrup = $('#summernote').summernote('code');
+            makrup = makrup.replace(
+                new RegExp('<script[^]*>[\\s\\S]*?</' + 'script>', 'gi'), '');
+            $('#summernote').summernote('code', makrup);
+            console.log(removeHTMLTag(makrup));
+            $('#summernote').summernote('destroy');
+        });
+        //编辑视图
+        $("#btn_edit").click(function() {
+            noteConf['height'] = 'auto';
+            noteConf['focus'] = false;
+            $('#summernote').summernote(noteConf);
+        });
+
+        $("#btn_save").click(function() {
+            var data = {
+                title:$("input[name=title]").val(),
+                mid : $('#mainType').select2("val"),
+                chid: $('#childType').select2("val"),
+                description : $('#summernote').summernote('code'),
+                simpleDesc : removeHTMLTag($('#summernote').summernote('code')),
+                share: $(":radio[name=share]:checked").val(),
+				nid:nid
+            }
+
+            if(!verifyStringLength(data.title,3,35)){
+                qiao.bs.alert('标题长度范围3-35');
+                return;
+            }
+
+            if(!verifyStringLength(data.simpleDesc,20,50000)){
+                qiao.bs.alert('内容长度范围20-50000');
+                return;
+            }
+
+            if(!verify(data.share,'int')){
+                qiao.bs.alert('分享状态类型不匹配');
+            }
+            if(!verify(data.mid,'int')){
+                qiao.bs.alert('主分类类型不匹配');
+            }
+            if(!verify(data.chid,'int')){
+                qiao.bs.alert('子分类类型不匹配');
+                return;
+            }
+
+            var images = '';
+            images = getImages('#summernote',images);
+            if(!isEmpty(images)){
+                data.images = images;
+            }
+            $.ajax({
+                type:"post",
+                url:"updateNote",
+                data:data,
+                success:function (result) {
+                    qiao.bs.confirm({
+                        id:result.id,
+                        title:'修改成功',
+                        msg:'是否返回后台?',
+                        okbtn:'后台',
+                        qubtn:'预览',
+                        keyboard:false,
+                        close:false
+                    },function () {
+                        window.location.href='./index.html';
+                    },function () {
+                        window.location.href='next.html?id='+result.id;
+                    });
+                }
+            });
+//                $('#summernote').summernote('pasteHTML', '<a>Hello</a>');
+        });
+	</script>
+
+</html>

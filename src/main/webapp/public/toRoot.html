@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>系统登录-超级管理员</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <!-- Bootstrap 3.3.6 -->
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="../css/font-awesome.min.css"/>
+    <!-- Theme style -->
+    <link rel="stylesheet" href="../js/AdminLTE/dist/css/AdminLTE.min.css">
+    <!--[if lt IE 9]>
+    <script src="../js/html5shiv.min.js"></script>
+    <script src="../js/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body class="hold-transition lockscreen">
+<!-- Automatic element centering -->
+<div class="lockscreen-wrapper">
+    <div class="lockscreen-logo">
+        <a href="../index.html"><b>个人学习笔记网</b></a>
+    </div>
+    <!-- User name -->
+    <div class="lockscreen-name">超级管理员</div>
+    <!-- START LOCK SCREEN ITEM -->
+    <div class="lockscreen-item">
+        <!-- lockscreen image -->
+        <div class="lockscreen-image">
+            <img src="" alt="User Image">
+        </div>
+        <!-- /.lockscreen-image -->
+        <!-- lockscreen credentials (contains the form) -->
+        <form class="lockscreen-credentials" onsubmit="return false;">
+            <div class="input-group">
+                <input type="password" class="form-control" placeholder="password">
+                <div class="input-group-btn">
+                    <button type="button" class="btn" onclick="systemLogin()">
+                        <i class="fa fa-arrow-right text-muted"></i>
+                    </button>
+                </div>
+            </div>
+        </form>
+        <!-- /.lockscreen credentials -->
+    </div>
+    <!-- /.lockscreen-item -->
+    <div class="lockscreen-footer text-center">
+        Copyright &copy;2017 湖南城市学院
+        <b><a href="http://www.hncu.net" class="text-black" target="_blank">hncu.net</a></b>
+        All Rights Reserved.
+    </div>
+</div>
+<!-- /.center -->
+</body>
+<!-- jQuery 2.2.3 -->
+<script src="../js/jquery.min.js"></script>
+<!-- Bootstrap 3.3.6 -->
+<script src="../js/bootstrap.min.js"></script>
+<!-- AdminLTE App -->
+<script src="../js/qiao.js"></script>
+<script src="../js/md5.js"></script>
+<script src="../js/verify.js"></script>
+<script>
+    var systemLogin = function () {
+        var pwd = $("input[type=password]").val();
+        if(!verifyStrLength(pwd,4,32)){
+            qiao.bs.alert('密码不符合规范……');
+        }else {
+            $.ajax({
+                type:'post',
+                url:'systemLogin',
+                data:{pwd:hex_md5($.trim(pwd))},
+                success:function (result) {
+                    if(!result){
+                        qiao.bs.alert('密码不匹配或不存在管理员……');
+                    }else{
+                        var url = qiao.search('url') || '';
+                        if(isEmpty(url))
+                            qiao.bs.confirm({
+                                title:'登录成功',
+                                msg:'是否前往系统管理界面',
+                                okbtn:'后台',
+                                qubtn:'首页',
+                                close:false,
+                                keyboard:false
+                            },function () {
+                                window.location.href = '../system/index.html';
+                            },function () {
+                                window.location.href = '../index.html';
+                            })
+                        else
+                            window.location.href = decodeURIComponent(url);
+                    }
+                }
+            });
+        }
+    }
+
+    $("input[type=password]").on('keyup',function (e) {
+        if(e.keyCode == 13){
+            systemLogin();
+        }
+    });
+    function setImg() {
+        $.ajax({
+            url:'isRootImg',
+            type:'post',
+            success:function (result) {
+                if(result){
+                    $('div.lockscreen-image img').attr('src','../images/head/root.jpg');
+                }else{
+                    $('div.lockscreen-image img').attr('src','../images/head/avatar.png');
+                }
+            }
+        });
+    }
+    $(function () {
+        setImg();
+    })
+</script>
+</html>

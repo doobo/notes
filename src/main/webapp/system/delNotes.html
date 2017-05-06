@@ -1,0 +1,221 @@
+<!--已删除笔记列表-->
+<div class="col-sm-12" id="app" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+	<div class="box box-primary">
+		<div class="box-header">
+			<form class="form-inline " onsubmit="return false;">
+				<div class="box-tools">
+					<div class="btn-group">
+						<button onclick="changeAll(2)" class="btn btn-sm btn-primary">
+							<i class="fa  fa-rotate-left"></i>恢复所选
+						</button>
+						<button @click="delAll()" class="btn btn-sm btn-primary">
+							<i class="fa  fa-trash"></i>彻底删除
+						</button>
+					</div>
+					<div class="input-group input-group-sm pull-right" style="width: 200px;">
+						<input type="text"  value="" name="word"
+							   class="form-control" @keyup.Enter="submit()"
+							   placeholder="根据文章标题搜索..." />
+						<div class="input-group-btn">
+							<button  class="btn btn-primary fa fa-search"
+									 onclick="toSearch()"></button>
+						</div>
+					</div>
+				</div>
+			</form>
+			<script>
+                var toSearch = function () {
+                    var info = {};
+                    info.wd = $.trim($("input[name=word]").val());
+                    if(isEmpty(info.wd)){
+                        delete info.wd;
+                    }
+                    info.curPage = 1;
+                    info.pageSize = data.info.pageSize;
+                    getSearchResult(info,function () {
+                        resetPage();
+                    });
+                }
+
+                //获取符合条件的搜索结果
+                var getSearchResult = function (info,callback) {
+                    $.ajax({
+                        type:'post',
+                        url:'getSearchDelNotes',
+                        data:info,
+                        success:function (result) {
+                            data.delNotes = result.notes;
+                            data.pageSize = result.pageSize;
+                            data.curPage = result.curPage;
+                            data.pageCount = result.pageCount;
+                            data.count = result.count;
+                        },
+                        complete:function () {
+                            if(typeof callback === "function"){
+                                callback();
+                            }
+                            data.info = info;
+                        }
+                    });
+                }
+
+                var resetPage = function () {
+                    resetPageNum({
+                        el: '#pagination',
+                        pageCount: data.pageCount,
+                        isOne: true,
+                        callback: function (page) {
+                            if (page != data.curPage) {
+                                data.info.curPage = page;
+                                getSearchResult(data.info, function () {
+                                    $("input[name=checkAll]")
+                                        .prop("checked", false);
+                                    data.checks = [];
+                                });
+                            }
+                        }
+                    });
+                }
+			</script>
+			<!-- /.box-tools -->
+		</div>
+		<!-- /.box-header -->
+		<div class="box">
+			<table class="table table-hover">
+				<tbody>
+				<tr>
+					<th><input type="checkbox" name="allCheck"
+							   onclick="checkAll('allCheck','childBox')"></th>
+					<th>笔记标题</th>
+					<th>所属作者</th>
+					<th>笔记类别</th>
+					<th>注册日期</th>
+					<th>管理工具</th>
+				</tr>
+				<tr v-for="(delNote,index) in delNotes" v-if="delNote[0] !== -1">
+					<td><input type="checkbox" name="childBox" v-model="checks" v-bind:value="index"></td>
+					<td>{{delNote[1]}}</td>
+					<td v-text="vue2.user.nickname"></td>
+					<td>{{delNote[2]}}</td>
+					<td>{{moment(delNote[4]).format('YYYY-MM-DD HH:mm:ss')}}</td>
+					<td>
+						<a v-bind:href="'./next.html?id='+delNote[0]" target="_blank"
+						   class="btn btn-default btn-xs fa fa-comment-o">详细</a>
+						<button @click="changeStatus(index,2)" class="btn btn-default btn-xs fa fa-rotate-left">恢复</button>
+						<button @click="delNotesAndLucene(index)" class="btn btn-default btn-xs fa fa-trash">彻底删除</button>
+					</td>
+				</tr>
+				</tbody>
+			</table>
+			<!--</div>-->
+			<div style="text-align:center;" id="pagination">
+				<ul id="pagination-demo" class="pagination-sm"></ul>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+    /**
+     * 复选框全选或全不选的函数
+     * @param {Object} allName 全选框的name，字符参数-'name'
+     * @param {Object} childName 子复选框的name，字符参数-'name'
+     */
+    function checkAll(allName, childName) {
+        var isChecked = $("input[name='" + allName + "']").prop("checked");
+        if(isChecked){
+            data.checks = [];
+            $("input[name='" + childName + "']").each(function() {
+                //$(this).prop("checked", isChecked);
+                data.checks.push($(this).attr("value"));
+            });
+        }else{
+            data.checks = [];
+        }
+    }
+    var data = {
+        pageSize:5,
+        pageCount:0,
+        curPage:1,
+        count:0,
+        delNotes:[],
+        checks:[],
+        info:{curPage:1,pageSize:5}
+    }
+
+    var vue = new Vue({
+        el: '#app',
+        data: data,
+        methods:{
+            submit:function () {
+                toSearch();
+            }
+        }
+    });
+
+    vue.changeStatus = function (index,status,callback) {
+        var sendData = {
+            id:data.delNotes[index][0],
+            status:status
+        };
+        if(sendData.id != -1)
+        $.ajax({
+            type:'post',
+            url:'changeStatus',
+            data:sendData,
+            success:function (result) {
+                if(result){
+                    vue.$set(data.delNotes[index],0,-1);
+                    if(typeof  callback === "function"){
+                        callback();
+                    }
+                }
+            }
+        });
+    };
+
+    var changeAll = function (status) {
+        try {
+            $.each(data.checks,function (index) {
+                if(data.delNotes[data.checks[index]] != undefined
+                    && data.delNotes[data.checks[index]][0] !== -1)
+                    changeStatus(data.checks[index],status);
+            });
+        } catch (e) {
+            console.log(e);
+        }
+    }
+
+    vue.delNotesAndLucene = function (index) {
+		if(data.delNotes[index][0] != -1){
+		    $.ajax({
+		        type:'post',
+				url:'delNoteAndLucene',
+				data:{nid:data.delNotes[index][0]},
+				success:function (result) {
+					if(!result){
+
+					}else{
+					    vue.$set(data.delNotes[index],0,-1);
+					}
+                }
+			});
+		}
+    }
+
+    vue.delAll = function () {
+        try {
+            $.each(data.checks,function (index) {
+                if(data.delNotes[data.checks[index]] != undefined
+                    && data.delNotes[data.checks[index]][0] !== -1)
+                   vue.delNotesAndLucene(index);
+            });
+        } catch (e) {
+            console.log(e);
+        }
+    }
+    $(function () {
+        getSearchResult(data.info,function () {
+            resetPage();
+        });
+    });
+</script>

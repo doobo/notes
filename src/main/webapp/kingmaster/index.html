@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>后台管理-管理员</title>
+    <title>网站管理-管理员</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <!-- Bootstrap 3.3.6 -->
@@ -46,31 +46,45 @@
                         <!-- Menu Toggle Button -->
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                             <!-- The user image in the navbar-->
-                            <img src="../js/AdminLTE/dist/img/user2-160x160.jpg" class="user-image" alt="User Image">
+                            <img v-bind:src="img" class="user-image" alt="User Image">
                             <!-- hidden-xs hides the username on small devices so only the image appears. -->
-                            <span class="hidden-xs">网站用户</span>
+                            <span class="hidden-xs" v-text="user.nickname"></span>
                         </a>
                         <ul class="dropdown-menu">
                             <!-- The user image in the menu -->
                             <li class="user-header">
-                                <img src="../js/AdminLTE/dist/img/user2-160x160.jpg" class="img-circle"
+                                <img v-bind:src="img" class="img-circle"
                                      alt="User Image">
                                 <p>
-                                    用户名 - 个人介绍
-                                    <small>详细内容</small>
+                                <span v-text="user.nickname"></span> - 管理员
                                 </p>
                             </li>
+                            <script>
+                                var toNoteList = function () {
+                                    vue2.setMenu('笔记列表','笔记管理');
+                                    getPageByUrl('notes.html')
+                                }
+
+                                var toHead = function () {
+                                    vue2.setMenu('头像管理','个人中心');
+                                    getPageByUrl('head.html')
+                                }
+                                var toMaster = function () {
+                                    vue2.setMenu('修改信息','个人中心');
+                                    getPageByUrl('master.html')
+                                }
+                            </script>
                             <!-- Menu Body -->
                             <li class="user-body">
                                 <div class="row">
                                     <div class="col-xs-4 text-center">
-                                        <a href="#">标签一</a>
+                                        <a href="javascript:toNoteList();">笔记列表</a>
                                     </div>
                                     <div class="col-xs-4 text-center">
-                                        <a href="#">标签二</a>
+                                        <a href="javascript:toHead();">头像管理</a>
                                     </div>
                                     <div class="col-xs-4 text-center">
-                                        <a href="#">标签三</a>
+                                        <a href="javascript:updateIndex();">更新缓存</a>
                                     </div>
                                 </div>
                                 <!-- /.row -->
@@ -78,18 +92,19 @@
                             <!-- Menu Footer-->
                             <li class="user-footer">
                                 <div class="pull-left">
-                                    <a href="#" class="btn btn-default btn-flat">个人中心</a>
+                                    <a href="javascript:toMaster();" class="btn btn-default btn-flat">个人中心</a>
                                 </div>
                                 <div class="pull-right">
-                                    <a href="#" class="btn btn-default btn-flat">退出</a>
+                                    <a href="./clearSession" class="btn btn-default btn-flat">退出</a>
                                 </div>
                             </li>
                         </ul>
                     </li>
-                    <!-- Control Sidebar Toggle Button -->
+                    <!-- Control Sidebar Toggle Button
                     <li>
                         <a href="#" id="side" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
                     </li>
+                    -->
                 </ul>
             </div>
         </nav>
@@ -101,18 +116,19 @@
             <!-- Sidebar user panel (optional) -->
             <div class="user-panel">
                 <div class="pull-left image">
-                    <img src="../js/AdminLTE/dist/img/user2-160x160.jpg" class="img-circle" alt="User Image">
+                    <img v-bind:src="img" class="img-circle" alt="User Image">
                 </div>
                 <div class="pull-left info">
-                    <p>用户昵称</p>
+                    <p v-text="user.nickname">用户昵称</p>
                     <!-- Status -->
                     <a href="#"><i class="fa fa-circle text-success"></i> 在线</a>
                 </div>
             </div>
             <!-- search form (Optional) -->
-            <form action="#" method="get" class="sidebar-form" onsubmit="return false;">
+            <form action="../public/index.html" method="get"
+                  class="sidebar-form" target="_blank">
                 <div class="input-group">
-                    <input type="text" name="q" class="form-control" placeholder="搜索...">
+                    <input type="text" name="wd" class="form-control" placeholder="搜索...">
                     <span class="input-group-btn">
                 <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i>
                 </button>
@@ -150,12 +166,12 @@
                     </a>
                 <ul class="treeview-menu">
                     <li>
-                        <a @click="setMenu('用户列表','用户管理')" href="javascript:getPageByUrl('users.html')">
-                            <i class="fa fa-info-circle"></i>用户列表</a>
+                        <a @click="setMenu('普通用户','用户管理')" href="javascript:getPageByUrl('users.html')">
+                            <i class="fa fa-user"></i>普通用户</a>
                     </li>
                     <li>
-                        <a @click="setMenu('管理员列表','用户管理')" href="javascript:getPageByUrl('manager.html')">
-                            <i class="fa fa-edit"></i>管理员列表</a>
+                        <a @click="setMenu('个人中心','用户管理')" href="javascript:getPageByUrl('master.html')">
+                            <i class="fa  fa-user-md"></i>个人中心</a>
                     </li>
                     </ul>
                 </li>
@@ -170,11 +186,11 @@
                     <ul class="treeview-menu">
                         <li>
                             <a @click="setMenu('图片管理','系统管理')" href="javascript:getPageByUrl('pic.html')">
-                                <i class="fa fa-info-circle"></i>图片管理</a>
+                                <i class="fa fa-image"></i>图片管理</a>
                         </li>
                         <li>
                             <a @click="setMenu('分词测试','系统管理')" href="javascript:getPageByUrl('analyzer.html')">
-                                <i class="fa fa-edit"></i>分词测试</a>
+                                <i class="fa  fa-scissors"></i>分词测试</a>
                         </li>
                     </ul>
                 </li>
@@ -188,11 +204,11 @@
                     <ul class="treeview-menu">
                         <li>
                             <a @click="setMenu('已删除账号','回收管理')" href="javascript:getPageByUrl('delAccount.html')">
-                                <i class="fa fa-book"></i>已删除账号</a>
+                                <i class="fa fa-trash"></i>已删除账号</a>
                         </li>
                         <li>
                             <a @click="setMenu('已删除笔记','回收管理')"  href="javascript:getPageByUrl('delNotes.html')">
-                                <i class="fa fa-book"></i>已删除笔记</a>
+                                <i class="fa fa-trash"></i>已删除笔记</a>
                         </li>
                     </ul>
                 </li>
@@ -249,14 +265,13 @@
                                     <th>创建时间</th>
                                     <th>管理工具</th>
                                 </tr>
-                                </tbody>
-                                <tbody v-for="(item,index) in data2.notes">
-                                <tr v-if="checkName(item[1],title) & item[0] !== -1">
+                                <tr v-for="(item,index) in data2.notes"
+                                    v-if="checkName(item[1],title) && item[0] !== -1">
                                     <td><input type="checkbox" name="childBox"
                                                v-bind:value="index" v-model="checks"/></td>
                                     <td><a class="a-btn" target="_blank"
-                                           v-bind:href="'../static/next.html?id='+item[0]">
-                                        {{item[1]}}</a></td>
+                                           v-bind:href="'./next.html?id='+item[0]">
+                                        {{subStr(item[1],30)}}</a></td>
                                     <td>{{item[3]}}</td>
                                     <td>{{moment(item[4]).format('YYYY-MM-DD HH:mm:ss')}}</td>
                                     <td>
@@ -266,7 +281,7 @@
                                 </tr>
                                 </tbody>
                                 <tfoot>
-                                <td colspan="5">
+                                <td colspan="5" id="pagination">
                                     <ul id="pagination-demo" class="pagination-sm"></ul>
                                 </td>
                                 </tfoot>
@@ -346,7 +361,6 @@
                     </li>
                 </ul>
                 <!-- /.control-sidebar-menu -->
-
             </div>
             <!-- /.tab-pane -->
             <!-- Stats tab content -->
@@ -384,26 +398,42 @@ immediately after the control sidebar -->
 <script src="../js/qiao.js"></script>
 <script src="../js/moment.min.js"></script>
 <script src="../js/vuejs/vue.min.js"></script>
+<script src="../js/master.js"></script>
+<script src="../js/md5.js"></script>
+<script src="../js/verify.js"></script>
 <script>
-    var getPageByUrl = function (url, data) {
-        $.ajax({
-            url: url,
-            global: false,
-            type: "POST",
-            data: data,
-            dataType: "html",
-            success: function (msg) {
-                $("#mainContent").html(msg);
-            }
-        });
-    }
     $(function () {
-        var AdminLTEOptions = {};
-        getNextPage(1,6,function () {
-            setPage();
+        is_login(undefined,function () {
+            getMaster(function (user) {
+                setImg(user.username)
+            });
+            getNextPage(1,5,function () {
+                resetPage();
+                if(data2.notes.length > 0){
+                    updateIndex(function () {
+                        console.log('更新缓存……');
+                    });
+                }
+            });
         });
-
     });
+
+    var resetPage = function () {
+        if(data2.pageCount >1){
+            resetPageNum({
+                el:'#pagination',
+                pageCount:data2.pageCount,
+                callback:function (page) {
+                    if(page == data2.curPage) return;
+                    getNextPage(page,data2.pageSize,function () {
+                        $("input[name=checkAll]")
+                            .prop("checked", false);
+                        data2.checks = [];
+                    });
+                }
+            });
+        }
+    }
 
     var setPage = function () {
         $('#pagination-demo').twbsPagination({
@@ -414,6 +444,7 @@ immediately after the control sidebar -->
             prev:'上一页',
             next:'下一页',
             onPageClick: function (event, page) {
+                if(page === data2.curPage) return;
                 getNextPage(page,data2.pageSize,function () {
                     $("input[name=checkAll]")
                         .prop("checked", false);
@@ -434,7 +465,25 @@ immediately after the control sidebar -->
         count:1,
         notes:[],
         typename:'',
-        checks:[]
+        checks:[],
+        user:{},
+        img:'../images/head/avatar.png'
+    }
+
+    var getMaster = function (callback) {
+        $.ajax({
+            type:'post',
+            url:'./getMaster',
+            success:function (result) {
+                if(!result){
+                }else{
+                    if(typeof callback == "function"){
+                        callback(result);
+                    }
+                    data2.user = result;
+                }
+            }
+        })
     }
 
     var vue2 = new Vue({
@@ -450,13 +499,12 @@ immediately after the control sidebar -->
                 data2.header = htxt;
             },
            checkName: function(dt,name) {
+               name = superTrim(name);
                if(name.length === 0) {
                    return true;
                }
-               eval("var myReg = /" + name + "/ig;");
-               if(myReg.test(dt))
-                   return true;
-               return false;
+               return isExitStringParam(dt
+                   ,replaceSpecialChar(name))
            },
            check:function (index,status) {
                changeOneCheck(index);
@@ -464,22 +512,42 @@ immediately after the control sidebar -->
         }
     });
 
+    var setImg = function (username) {
+        if(!isEmpty(username)){
+            $.ajax({
+                url:'isHeadImg',
+                type:'post',
+                data:{username:username},
+                success:function (result) {
+                    if(result){
+                        vue2.img = '../images/head/'+username+'.jpg';
+                    }else{
+                        vue2.img = '../images/head/avatar.png';
+                    }
+                }
+            });
+        }
+    }
     /**
      * 更新搜索索引的缓存
      */
-    var updateIndex = function () {
+    var updateIndex = function (callback) {
         $.ajax({
             type:'post',
             url:'clearLuceneCache',
             success:function (result) {
                 if(result){
-                    qiao.bs.alert({
-                        id:'lu_index01',
-                        title:'更新缓存',
-                        msg:'已成功更新缓存^~^'
-                    },function () {
-                        $("#side").click();
-                    })
+                    if(typeof callback !== "function"){
+                        qiao.bs.alert({
+                            id:'lu_index01',
+                            title:'更新缓存',
+                            msg:'已成功更新缓存^~^'
+                        },function () {
+
+                        });
+                    }else {
+                        callback();
+                    }
                 }
             },
             error:function () {
@@ -556,8 +624,6 @@ immediately after the control sidebar -->
             }
         });
     };
-    
-    
     var changeOneCheck = function (index) {
         if(data2.notes[index][0] !== -1)
         changeCheck(index,1,function () {
@@ -586,9 +652,6 @@ immediately after the control sidebar -->
             }),function () {
         }
     }
-
-
-
 </script>
 </body>
 

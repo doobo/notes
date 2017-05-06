@@ -87,7 +87,6 @@ public abstract class AbstractLuceneIndex implements LuceneIndexable {
         if (indexWriter != null) {
             System.out.println("关闭indexWriter对象");
             try {
-                indexWriter.commit();
                 indexWriter.close();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -132,6 +131,9 @@ public abstract class AbstractLuceneIndex implements LuceneIndexable {
     }
 
     public static Analyzer getAnalyzer() {
+        if(analyzer == null){
+            analyzer = new IKAnalyzer();
+        }
         return analyzer;
     }
 
@@ -147,11 +149,6 @@ public abstract class AbstractLuceneIndex implements LuceneIndexable {
         for (Object ins : array) {
             doc = new Document();
             writeDataToDocument(doc,ins);
-        }
-        try {
-            getIndexWriter().commit();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
     }
 

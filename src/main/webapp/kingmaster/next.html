@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" lang="zh_CN">
+    <title>预览笔记</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 引入 Bootstrap -->
+    <link rel="stylesheet" href="../css/bootstrap.min.css"/>
+    <!-- HTML5 Shim 和 Respond.js 用于让 IE8 支持 HTML5元素和媒体查询 -->
+    <!-- 注意： 如果通过 file://  引入 Respond.js 文件，则该文件无法起效果 -->
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="../js/html5shiv.js"></script>
+    <script type="text/javascript" src="../js/respond.min.js"></script>
+    <![endif]-->
+    <!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+    <script type="text/javascript" src="../js/jquery.min.js"></script>
+
+    <script type="text/javascript" src="../js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="../js/qiao.js"></script>
+    <script type="text/javascript" src="../js/code-prettify/prettify.js"></script>
+    <link rel="stylesheet" href="../js/code-prettify/prettify.css"/>
+    <script type="text/javascript" src="../js/jquery.scrollToTop.min.js"></script>
+    <!--AadminLTE基本资源-->
+    <link rel="stylesheet" href="../css/font-awesome.min.css"/>
+    <script type="text/javascript" src="../js/AdminLTE/dist/js/app.js"></script>
+    <link rel="stylesheet" href="../css/style.css"/>
+</head>
+<body>
+<div class="container" id="app">
+    <div class="row clearfix" style="margin-bottom: -15px;">
+        <a href="#top" id="toTop"></a>
+        <nav class="navbar navbar-inverse" role="navigation">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="#">个人学习笔记网</a>
+            </div>
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <ul class="nav navbar-nav">
+                    <li>
+                        <a href="../index.html">首页</a>
+                    </li>
+                    <li>
+                        <a href="index.html">新建笔记</a>
+                    </li>
+                    <li>
+                        <a href="../public/allType.html">全部分类</a>
+                    </li>
+                    <li>
+                        <a href="../public/search.html">高级搜索</a>
+                    </li>
+                </ul>
+                <form class="navbar-form navbar-left" role="search" action="../public/index.html">
+                    <div class="form-group">
+                        <input name="wd" type="text" class="form-control" placeholder="搜索笔记..."/>
+                    </div>
+                    <button type="submit" class="btn btn-default">搜索</button>
+                </form>
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <a href="javascript:nav_show();">网站导航</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div><!--The Header End-->
+    <script>
+        var nav_show = function () {
+            qiao.bs.dialog({
+                id : 'nav_index',
+                url :'../public/nav.htm',
+                head:false,
+                foot:false,
+                backdrop: true,
+                big : true
+            },function () {
+                return true;
+            });
+        }
+    </script>
+
+    <div class="row">
+        <div class="box box-primary">
+            <div class="box-header with-border">
+                <h3 class="box-title">{{data.note[3]}}</h3>
+            </div>
+            <!-- /.box-header -->
+            <div class="box-body no-padding">
+                <div class="mailbox-read-info" style="margin-top: -20px;">
+                    <h3>{{data.note[0]}}</h3>
+                    <h5>作者：{{data.note[1]}}
+                        <span class="mailbox-read-time pull-right">创建日期：{{moment(note[2]).format('YYYY-MM-DD HH:mm:ss')}}</span></h5>
+                </div>
+                <!-- /.mailbox-read-info -->
+                <div class="mailbox-controls with-border">
+                <p v-html="data.note[4]"></p>
+
+                </div>
+                <!-- /.mailbox-controls -->
+                <div class="mailbox-read-message">
+
+                </div>
+                <!-- /.mailbox-read-message -->
+            </div>
+            <!-- /.box-body -->
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 text-center footer">
+					<span class="common">
+			 	Copyright &copy;2017 湖南城市学院
+			 	<a class="common" href="http://www.hncu.net" target="_blank">hncu.net</a>
+			 	All Rights Reserved.
+			 </span>
+        </div>
+    </div>
+    <!--底部声明结束-->
+</div>
+<script type="text/javascript" src="../js/app.js"></script>
+<script type="text/javascript" src="../js/qiao.js"></script>
+<script src="../js/moment.min.js"></script>
+<script type="text/javascript" src="../js/vuejs/vue.min.js"></script>
+<script type="text/javascript">
+    //判读是否登录，没登录，重新加载
+    var is_login = function (url,callback) {
+        var url = url || '../isMaster';
+        $.ajax({
+            type:'post',
+            url:url,
+            success:function (result) {
+                if(!result){
+                    location.reload();
+                    return false;
+                }else {
+                    if(typeof callback == "function"){
+                        callback();
+                    }
+                    return true;
+                }
+            }
+        });
+    }
+
+    $(function () {
+        is_login();
+        data.id = qiao.search('id');
+        if(qiao.search('id') == undefined){
+            window.location.href='../public/404.html?url='
+                +encodeURIComponent(window.location.href);
+        }else {
+            getNote(data.id,function () {
+                $("#toTop").scrollToTop(800);
+            });
+        }
+    });
+
+    data = {
+        id:1,
+        note:[],
+        next:true,
+        pre:true
+    }
+
+    var getNote = function (id,callback) {
+        $.ajax({
+            type:'post',
+            url:'getNoteByID',
+            data:{id:id},
+            success:function (result) {
+                data.note = result[0];
+            },
+            complete:function () {
+                if(typeof callback == "function"){
+                    callback();
+                }
+            }
+        });
+    }
+    var vue = new Vue({
+        el:"#app",
+        data:data
+    });
+</script>
+</body>
+</html>

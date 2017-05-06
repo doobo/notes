@@ -19,6 +19,21 @@ public class PicInfo {
 
     private Date firstTime;
 
+    public PicInfo() {
+    }
+
+    public PicInfo(Integer id) {
+        this.id = id;
+    }
+
+    public PicInfo(String picPath, Notes notes, Integer width, Integer height) {
+        this.picPath = picPath;
+        this.notes = notes;
+        this.width = width;
+        this.height = height;
+        this.firstTime = new Date();
+    }
+
     public Integer getId() {
         return id;
     }

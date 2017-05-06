@@ -4,6 +4,8 @@ import org.junit.Test;
 import org.wltea.analyzer.core.IKSegmenter;
 import org.wltea.analyzer.core.Lexeme;
 
+import java.io.BufferedInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashSet;
@@ -12,6 +14,17 @@ import java.util.HashSet;
  * Created by Administrator on 2017/3/8.
  */
 public class UnitTest {
+
+
+
+    private String createBase64Image(String path) {
+        BufferedInputStream bis;
+        try {
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
 
     @Test
     public void testUnit(){

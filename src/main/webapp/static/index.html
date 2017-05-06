@@ -33,9 +33,7 @@
 		<link rel="stylesheet" href="../css/style.css" />
 		<!--AadminLTE基本资源-->
 		<link rel="stylesheet" href="../css/font-awesome.min.css" />
-		<script type="text/javascript" src="../js/AdminLTE/dist/js/app.js"></script>
 	</head>
-
 <body>
 <div class="container" id="app">
 <div class="row clearfix">
@@ -56,26 +54,36 @@
 					<a href="../public/allType.html">全部分类</a>
 				</li>
 				<li>
-					<a href="#">高级搜索</a>
+					<a href="../public/search.html">高级搜索</a>
 				</li>
 			</ul>
-			<form class="navbar-form navbar-left" role="search">
+			<form class="navbar-form navbar-left" target="_blank" role="search" action="../public/index.html">
 				<div class="form-group">
-					<input type="text" class="form-control" placeholder="搜索笔记..." />
+					<input name="wd" type="text" class="form-control" placeholder="搜索笔记..." />
 				</div> <button type="submit" class="btn btn-default">搜索</button>
 			</form>
 			<ul class="nav navbar-nav navbar-right">
 				<li>
-					<a href="../kingmaster/index.html">登录</a>
-				</li>
-				<li>
-					<a href="#">网站导航</a>
+					<a href="javascript:nav_show();">网站导航</a>
 				</li>
 			</ul>
 		</div>
 	</nav>
-</div>
-<!--The Header End-->
+</div><!--The Header End-->
+	<script>
+        var nav_show = function () {
+            qiao.bs.dialog({
+                id : 'nav_index',
+                url :'../public/nav.htm',
+                head:false,
+                foot:false,
+                backdrop: true,
+                big : true
+            },function () {
+                return true;
+            });
+        }
+	</script>
 
 <div class="row clearfix" style="margin-bottom: -15px; margin-top: -15px;">
 	<div class="box box-primary">
@@ -97,8 +105,7 @@
 				</div>
 				<div class="form-group" style="margin-bottom: 20px;">
 					<input type="text" size="50"  name="title"
-						   class="form-control" onkeyup="checkStringLength(50,
-						   'input[name=title]','标题长度不能大于30')"
+						   class="form-control"
 						   placeholder="请输入笔记标题..." />
 				</div><br />
 
@@ -170,11 +177,28 @@
 		<script type="text/javascript" src="../js/CodeMirror/addon/fold/xml-fold.js"></script>
 		<script type="text/javascript" src="../js/CodeMirror/addon/edit/closetag.js"></script>
 		<script type="text/javascript" src="../js/CodeMirror/addon/edit/closebrackets.js"></script>
+		<script type="text/javascript" src="../js/AdminLTE/dist/js/app.js"></script>
 		<script type="text/javascript" src="../js/app.js"></script>
+		<script type="text/javascript" src="../js/verify.js"></script>
 		<script type="text/javascript">
 		var mainData = [];
 		var childData = [];
+        var is_login = function () {
+            $.ajax({
+                type:'post',
+                url:'../isLogin',
+                success:function (result) {
+                    if(!result){
+                        location.reload();
+                        return false;
+                    }else {
+                        return true;
+                    }
+                }
+            })
+        };
 		$(function() {
+		    is_login();
 			changSelect1(undefined,function () {
 				changSelect2(mainData[0].id);
                 $('#summernote').summernote(noteConf);
@@ -183,144 +207,29 @@
 			});
 		});
 
-		var changSelect1 = function (chid,callback) {
-			$("#mainType").html('');
-			mainData = [];
-			$.ajax({
-				type:'post',
-				url:'getMainType',
-				data:null,
-				success:function (data) {
-					$.each(data,function () {
-						var tmp = {id:this.id,text:this.typename};
-						mainData.push(tmp);
-					});
-				},
-				complete:function () {
-					$("#mainType").select2({
-						data: mainData,
-					});
-					if(typeof(chid) !== "undefined"){
-						$("#mainType").select2().
-						val(chid).trigger("change");
-					}
-					if (typeof callback === "function"){
-						//alert(callback);
-						callback();
-					}
-				}
-			});
-		}
-
-		/**
-		 * 根据主id实现二级联动
-		 * @param id
-		 */
-		var changSelect2  = function (id,chid) {
-			$("#childType").html('');
-			childData = [];
-			$.ajax({
-				type:'post',
-				url:'getChildType',
-				data:{mid:id},
-				success:function (data) {
-					$.each(data,function () {
-						var tmp = {id:this.id,text:this.typename};
-						childData.push(tmp);
-					});
-				},
-				complete:function () {
-					$("#childType").select2({
-						data: childData,
-					});
-					if(typeof(chid) !== 'undefined'){
-						$("#childType").select2().
-						val(chid).trigger("change");
-					}
-				}
-			});
-		}
-
-        //select2的选项更改事件，只有选项值改变时才触发事件
-        $('#mainType').on('select2:select', function (evt) {
-            //获取选中值的id
-            var id =$('#mainType').select2("val");
-            changSelect2(id);
-        });
-
-        var addMType = function () {
-            qiao.bs.dialog({
-                id : "addMType",
-                url : 'addMainTypeStatic.htm',
-                title : '添加笔记主分类',
-                okbtn : '提交',
-                keyboard : false,
-                backdrop : false
-            },function () {
-                var $form = $('#addMType').find('form');
-                var data = {
-                    typeName:$form.find("input[name=typename]").val(),
-                    description:$form.find("textarea[name=description]").val()
-                };
-                $.ajax({
-                    type: "post",
-                    url: "addMainType",
-                    data:data,
-                    async: true,
-                    xhrFields: {
-                        withCredentials: true
-                    },
-                    success: function(result) {
-                        changSelect1(result.id,function () {
-                            changSelect2(result.id);
-                        });
-                    }
-                });
-                return true;
-            });
-        }
-
-        var addCHType = function () {
-            var mid=$('#mainType').select2("val");
-            qiao.bs.dialog({
-                id : "addCHType",
-                url : 'addChildType.htm',
-                title : '添加笔记子分类',
-                okbtn : '提交',
-                keyboard : false,
-                backdrop : false
-            },function () {
-                var $form = $('#addCHType').find('form');
-                var data = {
-                    typeName:$form.find("input[name=typename]").val(),
-                    description:$form.find("textarea[name=description]").val(),
-                    mid:mid
-                };
-                $.ajax({
-                    type: "post",
-                    url: "addChild",
-                    data:data,
-                    async: true,
-                    xhrFields: {
-                        withCredentials: true
-                    },
-                    success: function(result) {
-                        changSelect2(mid,result.id);
-                    }
-                });
-                return true;
-            });
-        }
-
 		//预览视图
 		$("#btn_view").click(function() {
 			var makrup = $('#summernote').summernote('code');
 			makrup = makrup.replace(
 			    new RegExp('<script[^]*>[\\s\\S]*?</' + 'script>', 'gi'), '');
-			console.log(removeHTMLTag(makrup));
-			$('#summernote').summernote('code', makrup);
+            $('#summernote').summernote('code',makrup);
+
+			var summer = $('#summernote').summernote('code');
+			var images = $(summer).find('img');
+			var options = '';
+			images.each(function () {
+                var tmp = this.style.cssText;
+                tmp = tmp.substring(tmp.indexOf(":")+1,tmp.indexOf("px"));
+				if(!isEmpty(this.src) && !isEmpty(tmp)){
+				    options = options + this.src + '>'+$.trim(tmp)+"~";
+				}
+            });
+			var options = '';
+			console.log(getImages('#summernote',options));
 			$('#summernote').summernote('destroy');
 		});
+
+
 		//编辑视图
 		$("#btn_edit").click(function() {
 			noteConf['height'] = 'auto';
@@ -328,35 +237,38 @@
 			$('#summernote').summernote(noteConf);
 		});
 
-		//去除字符串里面的html标签
-		function removeHTMLTag(str) {
-			str = str.replace(/<\/?[^>]*>/g, ''); //去除HTML tag
-			str = str.replace(/[ | ]*\n/g, ''); //去除行尾空白\n
-			str = str.replace(/\n[\s| | ]*\r/g, ''); //去除多余空行\n
-			str = str.replace(/&nbsp;/ig, ''); //去掉空格
-			str = str.replace(/&gt;/ig, ">"); //替换成'>'
-			str = str.replace(/&lt;/ig, "<"); //替换成'<'
-			str = str.replace(/&quot;/ig, "\""); //替换成'"'
-			str = str.replace(/&#39;/ig, "\""); //替换成'"'
-			str = str.replace(/&#9;/ig, ""); //替换tab
-			str = str.replace(/&amp;/ig, "&"); //替换&
-			str = str.replace(/&times;/ig, "×"); //替换*
-			str = str.replace(/&divide;/ig, "÷"); //替换除号
-			str = str.replace(/&copy;/ig, "©"); //替换版权
-			str = str.replace(/&reg;/ig, "®"); //替换商标注册
-			str = str.replace(/(^\s+)|(\s+$)/g,""); //去除行尾和行首空白
-			str = str.replace(/\s/g,"");//去除行内空白
-			return str;
-		}
-
 		$("#btn_save").click(function() {
+            $("#btn_edit").click();
 			var data = {
-				title:$("input[name=title]").val(),
+				title:$.trim($("input[name=title]").val()),
 				mid : $('#mainType').select2("val"),
 				chid: $('#childType').select2("val"),
-				description : $('#summernote').summernote('code'),
-				simpleDesc : removeHTMLTag($('#summernote').summernote('code')),
-				share: $(":radio[name=share]:checked").val()
+				description : $.trim($('#summernote').summernote('code')),
+				simpleDesc : $.trim(removeHTMLTag($('#summernote').summernote('code'))),
+				share: $(":radio[name=share]:checked").val() || 0
+			}
+			if(!verifyStringLength(data.title,3,35)){
+			    qiao.bs.alert('标题长度范围3-35');
+			    return;
+			}
+            if(!verifyStringLength(data.simpleDesc,20,50000)){
+                qiao.bs.alert('内容长度范围20-50000');
+                return;
+            }
+            if(!verify(data.share,'int')){
+                qiao.bs.alert('分享状态类型不匹配');
+			}
+			if(!verify(data.mid,'int')){
+                qiao.bs.alert('主分类类型不匹配');
+			}
+            if(!verify(data.chid,'int')){
+                qiao.bs.alert('子分类类型不匹配');
+                return;
+			}
+			var images = '';
+			images = getImages('#summernote',images);
+			if(!isEmpty(images)){
+			    data.images = images;
 			}
 			$.ajax({
 				type:"post",
@@ -384,22 +296,6 @@
 			});
 //                $('#summernote').summernote('pasteHTML', '<a>Hello</a>');
 		});
-
-
-
-		var checkStringLength = function(lg,option,msg) {
-			var content = $(option).val();
-			if (content.length > lg) {
-				qiao.bs.alert({
-					id : 'temp_'+msg.length,
-					title: '提示信息',
-					msg: '描述信息长度不能超过'+lg,
-				},function () {
-					return true;
-				});
-				$(option).val(content.substring(0, lg));
-			}
-		}
 		</script>
 	</body>
 

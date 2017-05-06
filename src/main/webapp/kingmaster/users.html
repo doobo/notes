@@ -1,103 +1,108 @@
-<!--用户列表-->
+<!--普通用户列表-->
 <div class="col-sm-12" id="app" style="margin-bottom: -20px;">
 	<div class="box box-primary">
 		<div class="box-header with-border ui-sortable-handle">
+			<h3 class="box-title">用户信息修改</h3>
+			<div class="box-tools">
 			<form class="form-inline" onsubmit="return false;">
-				<div class="form-group">
-					<select class="form-control">
-						<option>用户账号</option>
-						<option>用户昵称</option>
-					</select>
-				</div>
-				<div class="form-group">
-					<input  type="text" class="form-control" placeholder="请输入搜索内容...">
-				</div>
-				<div class="form-group">
-					<button class="btn btn-primary search-btn">
-						<i class="glyphicon glyphicon-search"></i>查询
-					</button>
+				<div class="form-group input-group pull-right">
+					<input type="text" name="word" class="form-control" placeholder="账号搜索...">
+					<div class="input-group-btn">
+						<button class="btn btn-primary" @click="vue.search()">
+							<i class="fa fa-search"></i>
+						</button>
+					</div>
 				</div>
 			</form>
+			</div>
+			<script>
+				var toSearch = function () {
+				    var wd = $.trim($("input[name=word]").val());
+				    if(isEmpty(wd)){
+				        delete data.info.wd;
+					}else{
+                        data.info.wd = wd;
+                    }
+					data.curPage = 1;
+					getUsers(data.info,function () {
+						resetPage();
+                    });
+                }
+                var getUsers = function (info,callback) {
+					var info = info ||{curPage:1,pageSize:6};
+					$.ajax({
+					    type:'post',
+						url:'./searchUser',
+						data:info,
+						success:function (result) {
+                            data.users = result.users;
+                            data.pageSize = result.pageSize;
+                            data.curPage = result.curPage;
+                            data.pageCount = result.pageCount;
+                            data.count = result.count;
+                        },
+                        complete:function () {
+                            if (typeof callback === "function") {
+                                callback();
+                            }
+                        }
+					});
+                }
+			</script>
 			<!-- /.box-tools -->
 		</div>
 		<!-- /.box-header -->
-		<div class="box">
+		<div class="box-body no-padding">
 			<table class="table table-hover">
-				<thead>
+				<tbody>
 				<tr>
 					<th>用户账号</th>
 					<th>用户昵称</th>
 					<th>注册日期</th>
 					<th>管理工具</th>
 				</tr>
-				</thead>
-				<tbody>
-				<tr v-for="(user,index) in users">
+				<tr v-for="(user,index) in users" v-if="user[0] != -1">
 					<td>{{user[1]}}</td>
 					<td>{{user[2]}}</td>
 					<td>{{moment(user[3]).format('YYYY-MM-DD HH:mm:ss')}}</td>
 					<td>
-						<button class="btn btn-default btn-xs fa fa-edit">修改密码</button>
-						<button class="btn btn-default btn-xs fa fa-comment-o">详细信息</button>
-						<button class="btn btn-default btn-xs fa fa-trash">删除用户</button>
+						<button @click="showUser(user)" class="btn btn-default btn-xs fa fa-comment-o">详细</button>
+						<button @click="editUser(user)" class="btn btn-default btn-xs fa fa-edit">修改</button>
+						<button @click="delUser(user[0],index)" class="btn btn-default btn-xs fa fa-trash">删除</button>
 					</td>
 				</tr>
 				</tbody>
 			</table>
 			<!--</div>-->
-			<div style="text-align:center;">
+			<div style="text-align:center;" id="pagination">
 				<ul id="pagination-demo" class="pagination-sm"></ul>
 			</div>
 		</div>
 	</div>
 </div>
 <script>
-    //获取指定页面的参数
-    var nextPage = function(nextPage,pageSize,callback){
-        $.ajax({
-            type:"post",
-            url:'getSimpleUser',
-            data:{
-                curPage:nextPage,
-                pageSize:pageSize
-            },
-            success:function (result) {
-                data.users = result.users;
-                data.pageSize = result.pageSize;
-                data.curPage = result.curPage;
-                data.pageCount = result.pageCount;
-                data.count = result.count;
-            },
-            complete:function () {
-                if(typeof callback === "function"){
-                    callback();
+    var resetPage = function () {
+		    resetPageNum({
+		        el:'#pagination',
+				pageCount:data.pageCount,
+				isOne:true,
+				callback:function (page) {
+                    if(page === data.curPage) return;
+                    else{
+                        data.info.curPage = page;
+                        getUsers(data.info);
+					}
                 }
-            }
-        });
+			});
     }
-
-    $(function () {
-        nextPage(1,6,function () {
-            $('#pagination-demo').twbsPagination({
-                totalPages: data.pageCount,
-                visiblePages: 7,
-                first:'首页',
-                last:'末页',
-                prev:'上一页',
-                next:'下一页',
-                onPageClick: function (event, page) {
-                    nextPage(page,data.pageSize,undefined);
-                }
-            });
-        });
-    });
-
     var data = {
         pageSize:5,
         pageCount:1,
         curPage:1,
         count:0,
-        users:[]
+        users:[],
+		info:{curPage:1,pageSize:6},
+		tmpUser:1
     }
 
     var vue = new Vue({
@@ -109,7 +114,62 @@
             },
             check:function (index,status) {
                 vue.$set(data.users[index],4,status);
+            },
+			search:function () {
+				toSearch();
             }
         }
     });
+    vue.showUser = function (user) {
+        vue.tmpUser = user;
+        qiao.bs.dialog({
+            id : 'showUser',
+            url :'./showUser.htm',
+            head:false,
+            foot:false,
+            backdrop: true,
+            big : true
+        },function () {
+            return true;
+        });
+    }
+
+    vue.editUser = function (user) {
+        vue.tmpUser = user;
+        qiao.bs.dialog({
+            id : 'editUser',
+            url :'./editUser.htm',
+            head:false,
+            foot:false,
+            backdrop: true,
+            big : true
+        },function () {
+            return true;
+        });
+    }
+
+    vue.delUser = function (uid,index) {
+		if(isEmpty(uid)){
+		    qiao.alert('参数错误，删除失败');
+		    return;
+		}else
+		    $.ajax({
+		        type:'post',
+				url:'./delSimpleUser',
+				data:{uid:uid},
+				success:function (result) {
+					if(!result){
+                        qiao.alert('参数错误，删除失败');
+					}else {
+					   vue.$set(data.users[index],0,-1);
+					}
+                }
+			});
+    }
+
+
+    $(function () {
+        toSearch(data.info);
+    });
+
 </script>

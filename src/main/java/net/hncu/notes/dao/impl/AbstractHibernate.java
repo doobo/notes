@@ -129,6 +129,15 @@ public  class AbstractHibernate implements Hibernateable {
                 .setMaxResults(pageSize);
     }
 
+    /**
+     * 获取Query
+     * @param hql
+     * @return
+     */
+    public Query getQueryByHQL(String hql){
+        return  getSession().createQuery(hql);
+    }
+
 
     /**
      * 执行HQL返回唯一结果集,如平均值、总记录数

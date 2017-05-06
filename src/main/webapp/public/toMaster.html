@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>网站登录-管理员</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <!-- Bootstrap 3.3.6 -->
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="../css/font-awesome.min.css"/>
+    <!-- Theme style -->
+    <link rel="stylesheet" href="../js/AdminLTE/dist/css/AdminLTE.min.css">
+    <!--[if lt IE 9]>
+    <script src="../js/html5shiv.min.js"></script>
+    <script src="../js/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body class="hold-transition login-page">
+<div class="login-box">
+    <div class="login-logo">
+        <a href="../index.html"><b>个人学习笔记网</b></a>
+    </div>
+    <!-- /.login-logo -->
+    <div class="login-box-body">
+        <p class="login-box-msg">管理员登录界面</p>
+
+        <form action="../index.html" method="post" onsubmit="return false;">
+            <div class="form-group has-feedback">
+                <input type="text" name="account" class="form-control" placeholder="登录账号">
+                <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+            </div>
+            <div class="form-group has-feedback">
+                <input type="password" name="password" class="form-control" placeholder="登录密码">
+                <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+            </div>
+            <div class="row">
+                <!-- /.col -->
+                <div class="col-xs-4"></div>
+                <div class="col-xs-4 text-center">
+                    <button type="submit" onclick="login()"
+                           class="btn btn-primary btn-block btn-flat">登录</button>
+                </div>
+                <!-- /.col -->
+            </div>
+        </form>
+        <div class="social-auth-links text-center">
+            <p>- 或者 -</p>
+            <a href="../index.html" class="btn btn-block btn-social btn-facebook btn-flat">
+                <i class="fa fa-home"></i>访问网站首页</a>
+            <a href="../public/search.html" class="btn btn-block btn-social btn-google btn-flat">
+                <i class="fa fa-search"></i>站内高级搜索</a>
+        </div>
+    </div>
+    <!-- /.login-box-body -->
+</div>
+<!-- /.login-box -->
+</body>
+<!-- jQuery 2.2.3 -->
+<script src="../js/jquery.min.js"></script>
+<script src="../js/bootstrap.min.js"></script>
+<script src="../js/verify.js"></script>
+<script src="../js/md5.js"></script>
+<script src="../js/qiao.js"></script>
+<script>
+    var login = function () {
+        var info = {
+            userName:$.trim($('input[name=account]').val()),
+            pwd:$.trim($('input[name=password]').val())
+        };
+        if(!verify(info.userName,'username')){
+            qiao.bs.alert('用户名格式不匹配……');
+            return;
+        }
+        if(!verifyStrLength(info.userName,4,12)){
+            qiao.bs.alert('用户名格式不匹配……');
+            return;
+        }
+        if(!verifyStrLength(info.pwd,4,32)){
+            qiao.bs.alert('密码不匹配……');
+            return;
+        }else{
+          info.pwd = hex_md5(info.pwd);
+          $.ajax({
+              type:'post',
+              url:'./masterLogin',
+              data:info,
+              success:function (result) {
+                  if(!result){
+                      qiao.bs.alert('用户名或密码不匹配……');
+                  }else{
+                      var url = qiao.search('url') || '';
+                      if(isEmpty(url))
+                          qiao.bs.confirm({
+                              title:'登录成功',
+                              msg:'是否前往后台管理界面',
+                              okbtn:'后台',
+                              qubtn:'首页',
+                              close:false,
+                              keyboard:false
+                          },function () {
+                              window.location.href = '../kingmaster/index.html';
+                          },function () {
+                              window.location.href = '../index.html';
+                          })
+                      else
+                          window.location.href = decodeURIComponent(url);
+                  }
+              }
+          });
+        }
+    }
+
+    $(function () {
+        is_login();
+        $("input[name=account]").val('').focus();
+    });
+    var is_login = function () {
+        $.ajax({
+            type:'post',
+            url:'../isMaster',
+            success:function (result) {
+                if(result){
+                    qiao.bs.confirm({
+                        title:'您已经登录',
+                        msg:'是否前往网站管理界面',
+                        okbtn:'后台',
+                        qubtn:'首页',
+                        close:false,
+                        keyboard:false
+                    },function () {
+                        window.location.href = '../kingmaster/index.html';
+                    },function () {
+                        window.location.href = '../index.html';
+                    })
+                }else {
+                    return true;
+                }
+            }
+        })
+    };
+</script>
+<script>
+    $("input[type=password]")
+        .on('keyup',function (e) {
+                if(e.keyCode == 13){
+                    login();
+                }
+            });
+</script>
+</html>

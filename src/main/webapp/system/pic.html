@@ -1,0 +1,202 @@
+<!--图片管理列表-->
+<div class="col-sm-12" id="app" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+	<div class="box box-primary">
+		<div class="box-header">
+			<h3 class="box-title">已删除笔记的图片</h3>
+			<div class="box-tools">
+				<div class="input-group input-group-sm" style="width: 200px;">
+					<input type="text" @keyup.enter="submit" value="" name="word"
+						   class="form-control"
+						   placeholder="根据文章标题搜索..."/>
+					<div class="input-group-btn">
+						<button class="btn btn-primary fa fa-search" onclick="toSearch()"></button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script>
+            var toSearch = function () {
+                var info = {};
+                info.wd = $.trim($("input[name=word]").val());
+                if (isEmpty(info.wd)) {
+                    delete info.wd;
+                }
+                info.curPage = 1;
+                info.pageSize = data.info.pageSize;
+                getSearchResult(info, function () {
+                    resetPage();
+                });
+            }
+            //获取符合条件的搜索结果
+            var getSearchResult = function (info, callback) {
+                $.ajax({
+                    type: 'post',
+                    url: 'getSearchInPicInfo',
+                    data: info,
+                    success: function (result) {
+                        data.pageSize = result.pageSize;
+                        data.pageCount = result.pageCount;
+                        data.curPage = result.curPage;
+                        data.pics = result.pics;
+                        data.count = result.count;
+                        $("input[name=checkAll]")
+                            .prop("checked", false);
+                    },
+                    complete: function () {
+                        if (typeof callback === "function") {
+                            callback();
+                        }
+                        data.info = info;
+                    }
+                });
+            }
+
+            //重新设置页码
+            var resetPage = function () {
+                $("#pagination").html('');
+                var t_id = 'page_id' + new Date().getTime();
+                if (data.pageCount > 1) {
+                    $('#pagination').html(
+                        '<ul id="' + t_id + '" class="pagination-sm"></ul>');
+                    $("#" + t_id).twbsPagination({
+                        totalPages: data.pageCount,
+                        visiblePages: 7,
+                        first: '首页',
+                        last: '末页',
+                        prev: '上一页',
+                        next: '下一页',
+                        onPageClick: function (event, page) {
+                            var el_li =
+                                '<li class="disabled">' +
+                                '<a class="page-link">总页数:' +
+                                data.pageCount + '</a></li>';
+                            $("#" + t_id).append(el_li);
+                            if (page === data.curPage) return;
+                            data.info.curPage = page;
+                            getSearchResult(data.info, function () {
+                                $("input[name=checkAll]")
+                                    .prop("checked", false);
+                            });
+                        }
+                    });
+                }
+            }
+		</script>
+		<!-- /.box-header -->
+		<div class="box box-body no-padding">
+			<table class="table table-hover">
+				<thead>
+				<tr>
+					<th>序号</th>
+					<th>所属笔记</th>
+					<th>图片宽</th>
+					<th>创建时间</th>
+					<th>管理工具</th>
+				</tr>
+				</thead>
+				<tbody>
+				<tr v-for="(item,index) in pics" v-if="item[0] != -1">
+					<td v-text="index+1"></td>
+					<td><a v-bind:href="'./next.html?id='+item[5]" target="_blank"
+						   v-text="item[6]" class="next"></a></td>
+					<td v-text="item[2]"></td>
+					<td v-text="moment(item[4]).format('YYYY-MM-DD HH:mm:ss')"></td>
+					<td>
+						<a class="btn btn-default btn-xs fa fa-edit" target="_blank"
+						   v-bind:href="'./update.html?nid='+item[5]">修改</a>
+						<button @click="showPhoto(index)" class="btn btn-default btn-xs fa  fa-eye">查看</button>
+						<button @click="changeStatus(index,1)" class="btn btn-default btn-xs fa  fa-trash">删除</button>
+					</td>
+				</tr>
+				<script>
+                    var show = function () {
+                        qiao.bs.dialog({
+                            id : 'photoshow',
+                            url :'photoshow.htm',
+                            head:false,
+                            foot:false,
+                            backdrop: true,
+                            big : true,
+                            mstyle:'width: 20px;'
+                        },function () {
+                            return true;
+                        });
+                    }
+				</script>
+				</tbody>
+			</table>
+			<!--</div>-->
+			<div style="text-align:center;" id="pagination">
+				<ul id="pagination-demo" class="pagination-sm"></ul>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+    var data = {
+        pageSize: 5,
+        pageCount: 1,
+        curPage: 1,
+        count: 0,
+        info: {curPage: 1, pageSize: 5, wd: ''},
+        pics: [],
+        tmp:{src:'',index:0,title:''}
+    }
+
+    var vue = new Vue({
+        el: '#app',
+        data: data,
+        methods: {
+            submit: function () {
+                toSearch();
+            },
+            showPhoto:function (index) {
+                if(index > (data.pics.length - 1)){
+                    index = 0;
+                }
+                data.tmp.src = data.pics[index][1];
+                data.tmp.index = index;
+                data.tmp.title = data.pics[index][6];
+                data.tmp.href = data.pics[index][5];
+                data.tmp.width = data.pics[index][2];
+                show();
+            }
+        }
+    });
+
+    $(function () {
+        getSearchResult(data.info, function () {
+            resetPage();
+        });
+    });
+
+    /**
+     * 复选框全选或全不选的函数
+     * @param {Object} allName 全选框的name，字符参数-'name'
+     * @param {Object} childName 子复选框的name，字符参数-'name'
+     */
+    function checkAll(allName, childName) {
+        var isChecked = $("input[name='" + allName + "']").prop("checked");
+        $("input[name='" + childName + "']").each(function () {
+            $(this).prop("checked", isChecked);
+        });
+    }
+
+    vue.changeStatus = function (index,status) {
+        var sendData = {
+            id:data.pics[index][5],
+            status:status
+        };
+        $.ajax({
+            type:'post',
+            url:'changeStatus',
+            data:sendData,
+            success:function (result) {
+                if(result){
+                   getSearchResult(data.info);
+                }
+            }
+        });
+    };
+
+</script>

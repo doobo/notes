@@ -31,6 +31,16 @@ public class User {
         this.signTime = signTime;
     }
 
+    public User( String username, String nickname,
+                 String password, Integer type, Integer status) {
+        this.username = username;
+        this.nickname = nickname;
+        this.password = password;
+        this.type = type;
+        this.status = status;
+        this.signTime = new Date();
+    }
+
     public User() {
     }
 

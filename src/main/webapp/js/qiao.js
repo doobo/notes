@@ -14,6 +14,7 @@
  * 8.qiao.end
  * 9.qiao.cookie
  * 10.qiao.search
+ * 11 qiao.bs.model 258 line
  */
 var qiao = {};
 

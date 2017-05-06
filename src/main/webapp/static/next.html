@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8" lang="zh_CN">
-    <title>新建笔记</title>
+    <title>预览笔记</title>
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- 引入 Bootstrap -->
@@ -46,27 +46,37 @@
                         <a href="../public/allType.html">全部分类</a>
                     </li>
                     <li>
-                        <a href="#">高级搜索</a>
+                        <a href="../public/search.html">高级搜索</a>
                     </li>
                 </ul>
-                <form class="navbar-form navbar-left" role="search">
+                <form class="navbar-form navbar-left" role="search" action="../public/index.html">
                     <div class="form-group">
-                        <input type="text" class="form-control" placeholder="搜索笔记..."/>
+                        <input name="wd" type="text" class="form-control" placeholder="搜索笔记..."/>
                     </div>
                     <button type="submit" class="btn btn-default">搜索</button>
                 </form>
                 <ul class="nav navbar-nav navbar-right">
                     <li>
-                        <a href="../kingmaster/index.html">登录</a>
-                    </li>
-                    <li>
-                        <a href="#">网站导航</a>
+                        <a href="javascript:nav_show();">网站导航</a>
                     </li>
                 </ul>
             </div>
         </nav>
-    </div>
-    <!--The Header End-->
+    </div><!--The Header End-->
+    <script>
+        var nav_show = function () {
+            qiao.bs.dialog({
+                id : 'nav_index',
+                url :'../public/nav.htm',
+                head:false,
+                foot:false,
+                backdrop: true,
+                big : true
+            },function () {
+                return true;
+            });
+        }
+    </script>
 
     <div class="row">
         <div class="box box-primary">
@@ -75,7 +85,7 @@
             </div>
             <!-- /.box-header -->
             <div class="box-body no-padding">
-                <div class="mailbox-read-info">
+                <div class="mailbox-read-info" style="margin-top: -20px;">
                     <h3>{{data.note[0]}}</h3>
                     <h5>作者：{{data.note[1]}}
                         <span class="mailbox-read-time pull-right">创建日期：{{moment(note[2]).format('YYYY-MM-DD HH:mm:ss')}}</span></h5>
@@ -111,10 +121,26 @@
 <script src="../js/moment.min.js"></script>
 <script type="text/javascript" src="../js/vuejs/vue.min.js"></script>
 <script type="text/javascript">
+    var is_login = function () {
+        $.ajax({
+            type:'post',
+            url:'../isLogin',
+            success:function (result) {
+                if(!result){
+                    location.reload();
+                    return false;
+                }else {
+                    return true;
+                }
+            }
+        })
+    };
     $(function () {
+        is_login();
         data.id = qiao.search('id');
-        if(typeof qiao.search('id') === "undefined"){
-            qiao.bs.alert('该文章不存在或删除……');
+        if(qiao.search('id') == undefined){
+            window.location.href='../public/404.html?url='
+                +encodeURIComponent(window.location.href);
         }else {
             getNote(data.id,function () {
                 $("#toTop").scrollToTop(800);
@@ -135,7 +161,12 @@
             url:'getNoteByID',
             data:{id:id},
             success:function (result) {
-                data.note = result[0];
+                if(result.length == 0 ){
+                    window.location.href = '../public/404.html?url='
+                        +encodeURIComponent(window.location.href);
+                }else{
+                    data.note = result[0];
+                }
             },
             complete:function () {
                 if(typeof callback == "function"){
@@ -144,55 +175,6 @@
             }
         });
     }
-
-    var getNextNote = function () {
-        if(!data.next){
-            qiao.bs.alert('没有下一页哦！');
-            return false;
-        }else
-        $.ajax({
-            type:'post',
-            url:'getNextNote',
-            data:{time:data.note[2],nid:data.note[5],cid:data.note[6]},
-            success:function (result) {
-                if(result.length === 0 ){
-                    data.next = false;
-                    qiao.bs.alert('没有下一页哦！');
-                }else{
-                    data.note = result[0];
-                    data.pre = true;
-                }
-            },
-            complete:function () {
-                $("#toTop").click();
-            }
-        });
-    }
-
-    var getPreNote = function () {
-        if(!data.pre){
-            qiao.bs.alert('没有上一页哦！');
-            return;
-        }else
-        $.ajax({
-            type:'post',
-            url:'getPreNote',
-            data:{time:data.note[2],nid:data.note[5],cid:data.note[6]},
-            success:function (result) {
-                if(result.length === 0){
-                    data.pre = false;
-                    qiao.bs.alert('没有上一页哦！');
-                }else {
-                    data.note = result[0];
-                    data.next = true;
-                }
-            },
-            complete:function () {
-                $("#toTop").click();
-            }
-        });
-    }
-
     var vue = new Vue({
         el:"#app",
         data:data

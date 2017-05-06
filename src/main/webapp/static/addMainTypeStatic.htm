@@ -28,18 +28,7 @@
 
 <script>
 	$(function () {
-        $("input[name=typename]").bspop({
-            title   : '提示',
-            placement : 'top',
-            content : '分类名称长度不能超过20'
-        });
-
-        $("textarea[name=description]").bspop({
-            title   : '提示',
-            content : '描述信息长度不能超过200'
-        });
     });
-
     var checkLength = function(lg) {
         var content = $("textarea[name=description]").val();
         if (content.length > lg) {

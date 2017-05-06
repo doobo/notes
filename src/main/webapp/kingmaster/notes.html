@@ -2,13 +2,13 @@
 <div class="col-sm-12" id="app"
 	 style="margin-bottom: -20px;" xmlns:v-bind="http://www.w3.org/1999/xhtml">
 	<div class="box box-primary">
-		<div class="box-header with-border ui-sortable-handle" style="cursor: move;">
-			<div class="pull-left">
+		<div class="box-header" style="cursor: move;">
+			<div class="pull-left btn-group">
+				<label class="btn btn-primary fa  fa-trash" @click="changStatusAll(1)">删除</label>
 				<label class="btn btn-primary fa  fa-check" onclick="changCheckAll(1)">审核通过</label>
 				<label class="btn btn-primary fa fa-close" onclick="changCheckAll(0)">不审核</label>
 				<label class="btn btn-primary fa fa-unlock" onclick="changShareAll(0)">分享</label>
 				<label class="btn btn-primary fa fa-unlock-alt" onclick="changShareAll(1)">不分享</label>
-				<label class="btn btn-primary fa fa-search">查询</label>
 			</div>
 			<div class="pull-right">
 				<button type="button" id="btn_coll" class="btn btn-box-tool" data-widget="collapse">
@@ -19,44 +19,118 @@
 		<!-- /.box-header -->
 		<div class="box-body row">
 			<div class="form-group col-sm-2">
-				<label>所属类别:</label>
-				<select class="form-control">
-					<option>全部</option>
-					<option>JavaSE基础</option>
-				</select>
-			</div>
-
-			<div class="form-group col-sm-2">
 				<label>审核状态:</label>
-				<select class="form-control">
-					<option>全部</option>
-					<option>已审核</option>
-					<option>未审核</option>
+				<select class="form-control" name="check">
+					<option value="all">全部</option>
+					<option value="1">已审核</option>
+					<option value="0">未审核</option>
 				</select>
 			</div>
 			<div class="form-group col-sm-2">
 				<label>分享状态:</label>
-				<select class="form-control">
-					<option>全部</option>
-					<option>已分享</option>
-					<option>未分享</option>
+				<select class="form-control" name="share">
+					<option value="all">全部</option>
+					<option value="0">已分享</option>
+					<option value="1">未分享</option>
 				</select>
 			</div>
 
 			<div class="form-group col-sm-2">
 				<label>开始时间:</label>
-				<input  type="text" class="form-control qdate" id="dtime" placeholder="请输入开始时间...">
+				<div class="input-group">
+					<input  type="text" class="form-control time" name="startTime" placeholder="开始时间...">
+					<span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
+				</div>
 			</div>
 
 			<div class="form-group col-sm-2">
 				<label>结束时间:</label>
-				<input  type="text" class="form-control qdate" placeholder="请输入结束时间...">
+				<div class="input-group">
+					<input  type="text" class="form-control time" name="endTime" placeholder="结束时间...">
+					<span class="input-group-addon"><i class="fa fa-calendar-o"></i></span>
+				</div>
 			</div>
-
 			<div class="form-group col-sm-2">
 				<label>按标题名称查询:</label>
-				<input type="text" class="form-control" placeholder="请输入标题名称...">
+				<input type="text" name="word" @keyup.Enter="keyEnter()"
+					   class="form-control" placeholder="请输入标题名称...">
 			</div>
+			<div class="form-group col-sm-1">
+				<label>&nbsp;</label>
+				<button type="button" onclick="searchNotes()" class="form-control btn btn-primary">
+					<i class=" fa fa-search"></i>查询</button>
+			</div>
+			<script>
+                //获取搜索条件
+                var searchNotes = function () {
+                    var info = {};
+                    info.startTime = $("input[name=startTime]").val();
+                    info.endTime = $("input[name=endTime]").val();
+                    info.wd = $("input[name=word]").val();
+                    info.check = $("select[name=check]").val();
+                    info.share = $("select[name=share]").val();
+                    if(isEmpty(info.wd)){
+                        delete info.wd ;
+                    }
+                    if(info.check === 'all'){
+                        delete info.check;
+                    }
+                    if(info.share === 'all'){
+                        delete info.share;
+                    }
+                    if(verify(info.startTime,'date') && verify(info.endTime,'date')){
+                        info.startTime = moment(info.startTime, "YYYY-MM-DD")._d.getTime();
+                        info.endTime = moment(info.endTime, "YYYY-MM-DD")._d.getTime();
+                        if(info.endTime<info.startTime){
+                            $("input[name=startTime]").val(moment(info.endTime).format("YYYY-MM-DD"));
+                            $("input[name=endTime]").val(moment(info.startTime).format("YYYY-MM-DD"));
+                            info.startTime = info.endTime;
+                        }
+                        info.endTime = $("input[name=endTime]").val();
+                        info.endTime = moment(info.endTime, "YYYY-MM-DD")
+                            .add(1,'days')._d.getTime();
+                    }else{
+                        delete info.startTime;
+                        delete info.endTime;
+                    }
+                    //条件为空时，可执行的语句
+//                    if($.isEmptyObject(info)){
+//                        console.log('info is Empty');
+//                        return;
+//                    }
+                    info.curPage = 1;
+                    info.pageSize = 5;
+                    getSearchResult(info,function () {
+                        $("#pagination").html('');
+                        resetPage();
+                    });
+                    return;
+                }
+                //获取符合条件的搜索结果
+                var getSearchResult = function (info,callback) {
+                    vue.info = info;
+                    $.ajax({
+                        type:'post',
+                        url:'getSearchNotes',
+                        data:info,
+                        success:function (result) {
+                            data.notes = result.notes;
+                            data.pageSize = result.pageSize;
+                            data.curPage = result.curPage;
+                            data.pageCount = result.pageCount;
+                            data.count = result.count;
+                            $("input[name=checkAll]")
+                                .prop("checked", false);
+                            data.indexs = [];
+                        },
+                        complete:function () {
+                            if(typeof callback === "function"){
+                                callback();
+                            }
+                        }
+                    });
+                }
+			</script>
 		</div><!--The box-body End -->
 		<div class="box">
 			<table class="table table-hover">
@@ -74,11 +148,11 @@
 				</tr>
 				</thead>
 				<tbody>
-				<tr v-for="(note,index) in notes">
+				<tr v-for="(note,index) in notes" v-if="note[0] != -1">
 					<td><input type="checkbox" name="childBox"
 							   v-bind:value="index" v-model="indexs"/></td>
-					<td><a v-bind:href="'../static/next.html?id='+note[0]"
-						  class="next" target="_blank">{{note[1]}}</a></td>
+					<td><a v-bind:href="'./next.html?id='+note[0]"
+						  class="next" target="_blank">{{subStr(note[1],20)}}</a></td>
 					<td>{{note[3]}}</td>
 					<td>{{note[2]}}</td>
 					<td  v-if=" note[4] === 0">未审核</td>
@@ -91,65 +165,39 @@
 						<button @click="share(index,0)" v-if="note[5] === 1" class="btn btn-default btn-xs fa fa-unlock">分享笔记</button>
 						<button @click="check(index,1)" v-if="note[4] === 0" class="btn btn-default btn-xs fa  fa-check">通过审核</button>
 						<button @click="check(index,0)" v-if="note[4] === 1" class="btn btn-default btn-xs fa fa-close">取消审核</button>
-						<a v-bind:href="'../static/update.html?nid='+note[0]"
+						<a v-bind:href="'update.html?nid='+note[0]"
 						   target="_blank" class="btn btn-default btn-xs fa fa-edit">修改</a>
-						<button @click="status(index,1)" class="btn btn-default btn-xs fa fa-search">删除</button>
+						<button @click="status(index,1)" class="btn btn-default btn-xs fa fa-trash">删除</button>
 					</td>
 				</tr>
 				</tbody>
 			</table>
 			<!--</div>-->
-			<div style="text-align:center;">
+			<div style="text-align:center;" id="pagination">
 				<ul id="pagination-demo" class="pagination-sm"></ul>
 			</div>
 		</div>
 	</div>
 </div>
 <script>
-	//获取指定页面的参数
-    var nextPage = function(nextPage,pageSize,callback){
-        $.ajax({
-            type:"post",
-            url:'getSimpleNotes',
-            data:{
-                curPage:nextPage,
-                pageSize:pageSize
-            },
-            success:function (result) {
-                data.notes = result.notes;
-                data.pageSize = result.pageSize;
-                data.curPage = result.curPage;
-                data.pageCount = result.pageCount;
-                data.count = result.count;
-            },
-            complete:function () {
-                if(typeof callback === "function"){
-                    callback();
-                }
-            }
-        });
-    }
-
-    $(function () {
-	    nextPage(1,5,function () {
-            qiao.bs.bsdate('.qdate');
-            $('#pagination-demo').twbsPagination({
-                totalPages: data.pageCount,
-                visiblePages: 7,
-                first:'首页',
-				last:'末页',
-				prev:'上一页',
-				next:'下一页',
-                onPageClick: function (event, page) {
-                    nextPage(page,data.pageSize,function () {
+    //重置页面
+    var resetPage = function () {
+		if(data.pageCount > 1){
+		    resetPageNum({
+		        el:'#pagination',
+				pageCount:data.pageCount,
+				callback:function (page) {
+                    if(page === data.curPage) return;
+                    data.info.curPage = page;
+                    getSearchResult(data.info,function () {
                         $("input[name=checkAll]")
                             .prop("checked", false);
                         data.indexs = [];
                     });
                 }
-            });
-        });
-    });
+			});
+		}
+    }
 
     /**
      * 复选框全选或全不选的函数
@@ -176,7 +224,8 @@
         curPage:1,
         count:0,
         notes:[],
-        indexs:[]
+        indexs:[],
+		info:{curPage:1,pageSize:5}
     };
 
     var vue = new Vue({
@@ -194,6 +243,9 @@
             },
 			status:function (index,status) {
 				changeStatus(index,status);
+            },
+            keyEnter:function () {
+				searchNotes();
             }
 		}
     });
@@ -203,6 +255,7 @@
 		    id:data.notes[index][0],
 			check:status
 		};
+		if(data.notes[index][0] != -1)
 		$.ajax({
 		    type:'post',
 			url:'changeCheck',
@@ -220,6 +273,7 @@
             id:data.notes[index][0],
             share:status
         };
+        if(data.notes[index][0] != -1)
         $.ajax({
             type:'post',
             url:'changeShare',
@@ -237,16 +291,14 @@
             id:data.notes[index][0],
             status:status
         };
+        if(data.notes[index][0] != -1)
         $.ajax({
             type:'post',
             url:'changeStatus',
             data:sendData,
             success:function (result) {
                 if(result){
-                    data.notes.splice(index, 1);
-                    data.indexs = [];
-                    $("input[name=checkAll]")
-                        .prop("checked", false);
+                    vue.$set(data.notes[index],0,-1);
                 }
             }
         });
@@ -263,10 +315,11 @@
 		}
 		qiao.bs.confirm(tmp
 		,function () {
-			$.each(data.indexs,function () {
-                if(data.notes[this[0]][4] !== check)
-				changeCheck(this[0],check);
-            })
+			$.each(data.indexs,function (index) {
+				if(data.notes[data.indexs[index]][0] != -1
+					&&data.notes[data.indexs[index]][4] !== check)
+					changeCheck(data.indexs[index],check);
+			})
         }),function () {
 
         }
@@ -283,17 +336,17 @@
         }
 		qiao.bs.confirm(tmp
 		,function () {
-			$.each(data.indexs,function () {
-			    if(data.notes[this[0]][5] !== share)
-				changeShare(this[0],share);
-            })
+			$.each(data.indexs,function (index) {
+				if(data.notes[data.indexs[index]][0] != -1
+					&&data.notes[data.indexs[index]][5] !== share)
+					changeShare(data.indexs[index],share);
+			})
         }),function () {
 
         }
     }
 
-
-    var changStatusAll = function (status) {
+    vue.changStatusAll = function (status) {
         var tmp = {title:'',msg:''};
         if(status === 1 ){
             tmp.title = '批量删除';
@@ -304,12 +357,19 @@
         }
         qiao.bs.confirm(tmp
             ,function () {
-                $.each(data.indexs,function () {
-                   changeStatus(this[0],status)
-                })
+                $.each(data.indexs,function (index) {
+                    if(data.notes[data.indexs[index]][0] != -1)
+                        changeStatus(data.indexs[index],status);
+                });
             }),function () {
-
         }
     }
 
+    $(function () {
+        getSearchResult(data.info,function () {
+            qiao.bs.bsdate('.time');
+            resetPage();
+            $("input[name=endTime]").val(moment().format("YYYY-MM-DD"));
+        });
+    });
 </script>

@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title>个人学习笔记网-高级搜索</title>
+    <link rel="stylesheet" href="../css/search.css">
+    <!-- HTML5 Shim 和 Respond.js 用于让 IE8 支持 HTML5元素和媒体查询 -->
+    <!-- 注意： 如果通过 file://  引入 Respond.js 文件，则该文件无法起效果 -->
+    <!--[if lt IE 9]>
+    <script type="text/javascript" src="../js/html5shiv.js"></script>
+    <script type="text/javascript" src="../js/respond.min.js"></script>
+    <![endif]-->
+</head>
+<body style="margin-top: 100px;" onclick="empty()">
+<div id="app"><a id="tmp" href="#" target="_blank"></a>
+    <form action="index.html"  method="get" onsubmit="return false;" target="_blank">
+        <div class="autocomplete-container" style="height: 60px; width: 401px;">
+            <input type="text" autocomplete="off" name="wd" placeholder="请输入您要搜索的内容…"
+                   @keyup="keyEvent($event)"
+                   class="autocomplete-input" v-model="wd"
+                   style="width: 300px; height: 28px; border-radius: 3px 0px 0px 3px;">
+            <div class="proposal-box" style="width: 318px; top: 50px;">
+                <ul class="proposal-list">
+                    <li class="proposal" v-for="(item,index) in hints" @click="liClick(item)"
+                        @mouseover="liOne($event)" @mouseout="liTwo($event)" v-text="item">
+                    </li>
+                </ul>
+            </div>
+            <div class="autocomplete-button" onclick="toSearch()"
+                 style="height: 32px; line-height: 32px;margin-top: 0px" v-text="typename">
+            </div>
+        </div>
+    </form>
+
+    <div style="float: none; display: block; margin-left: auto;  margin-right: auto; width: 301px;">
+        <label><input type="radio" @click="changeSearchType('综合搜索')" name="type" value="1" checked/>综合搜索</label>
+        <label><input type="radio" @click="changeSearchType('标题搜索')" name="type" value="2"/>标题搜索</label>
+        <label><input type="radio" @click="changeSearchType('网络搜索')" name="type" value="3"/>网络搜索</label>
+    </div>
+    <br/>
+
+    <div class="itagBox">
+        <ul class="artist_l">
+            <li onclick="goNotes(0)">
+                <div class="tag_txt">
+                </div>
+                <a href="#"><br /><span class="tag_yellow">精英保录</span></a>
+            </li>
+
+            <li class="tag1 tag2" onclick="goNotes(1)">
+                <div class="tag_txt">
+                </div>
+                <a href="#"><br /><span class="tag_yellow">精英保录</span></a>
+            </li>
+
+            <li onclick="goNotes(2)">
+                <div class="tag_txt">
+                </div>
+                <a href="#"><br /><span class="tag_yellow">精英保录</span></a>
+            </li>
+
+            <li class="tag1 tag2" onclick="goNotes(3)">
+                <div class="tag_txt">
+                </div>
+                <a href="#"><br /><span class="tag_yellow">精英保录</span></a>
+            </li>
+
+            <li class="tag1 tag2" onclick="goNotes(4)">
+                <div class="tag_txt">
+                </div>
+                <a href="#"><br /><span class="tag_yellow">精英保录</span></a>
+            </li>
+
+            <li onclick="goNotes(5)">
+                <div class="tag_txt">
+                </div>
+                <a href="#"><br /><span class="tag_yellow">精英保录</span></a>
+            </li>
+
+            <li class="tag1 tag2" onclick="goNotes(6)">
+                <div class="tag_txt">
+                </div>
+                <a href="#"><br /><span class="tag_yellow">精英保录</span></a>
+            </li>
+
+            <li onclick="goNotes(7)">
+                <div class="tag_txt">
+                </div>
+                <a href="#"><br /><span class="tag_yellow">精英保录</span></a>
+            </li>
+
+            <li onclick="goNotes(8)">
+                <div class="tag_txt">
+                </div>
+                <a href="#"><br /><span class="tag_yellow">精英保录</span></a>
+            </li>
+            <li class="tag1 tag2" onclick="goNotes(9)">
+                <div class="tag_txt">
+                </div>
+                <a href="#"><br /><span class="tag_yellow">精英保录</span></a>
+            </li>
+            <li class="tag1" onclick="goNotes(10)">
+                <div class="tag_txt">
+                </div>
+                <a href="#"><br /><span class="tag_yellow">精英保录</span></a>
+            </li>
+            <li class="tag3" onclick="goNotes(11)">
+                <div class="tag_txt">
+                </div>
+                <a href="#"><br /><span class="tag_yellow">精英保录</span></a>
+            </li>
+        </ul>
+    </div>
+
+    <div style="text-align:center;margin:50px 0; font:normal 14px/24px 'MicroSoft YaHei';">
+        <p>Copyright &copy;2017 湖南城市学院
+            <a href="http://www.hncu.net" target="_blank">hncu.net</a>
+            All Rights Reserved.</p>
+    </div>
+</div>
+</body>
+<script src="../js/jquery-1.8.3.min.js"></script>
+<script src="../js/damai_ui-min.js"></script>
+<script src="../js/vuejs/vue.min.js"></script>
+<script>
+    $(document).ready(function () {
+        getNextNotes(12, function () {
+           var lis = $(".itagBox ul li");
+           $.each(data.notes,function (index) {
+               $(lis[index]).find("div").html(this[1]);
+               $(lis[index]).find("a span").html(this[1]);
+           });
+
+           if(data.notes.length<12){
+               for(var i = 11 ;i>data.notes.length-1;i--){
+                   $(lis[i]).remove();
+               }
+           }
+           $("input[name=wd]").val('').focus();
+        });
+    });
+
+    var data = {
+        hints: [],
+        wd: '',
+        typename: '综合搜索',
+        notes: [],
+        pageCount: 1,
+        curPage: 1
+    }
+
+    var vue = new Vue({
+        el: "#app",
+        data: data,
+        methods: {
+            liOne: function ($event) {
+                $($event.target).addClass("selected");
+            },
+            liTwo: function ($event) {
+                $($event.target).removeClass("selected");
+            },
+            liClick: function (txt) {
+                data.wd = txt;
+                data.hints = [];
+            },
+            keyEvent: function ($event) {
+                handleInputKey($event);
+            },
+            changeSearchType: function (text) {
+                data.typename = text;
+                $("input[name=wd]").val('').focus();
+            }
+        }
+    })
+
+    vue.$watch('wd', function (newValue, oldValue) {
+        //console.log(newValue, oldValue) // 输出 2 1
+        getSearchResult();
+    });
+
+    var currentSelection = -1;
+    var handleInputKey = function (e) {
+        var proposalList = $('ul.proposal-list');
+        switch (e.keyCode) {
+            case 38: // Up arrow
+                e.preventDefault();
+                $('ul.proposal-list li').removeClass('selected');
+                if ((currentSelection - 1) >= 0) {
+                    currentSelection--;
+                    $("ul.proposal-list li:eq(" + currentSelection + ")")
+                        .addClass('selected');
+                } else {
+                    currentSelection = -1;
+                }
+                break;
+            case 40: // Down arrow
+                e.preventDefault();
+                if ((currentSelection + 1) < data.hints.length) {
+                    $('ul.proposal-list li').removeClass('selected');
+                    currentSelection++;
+                    $("ul.proposal-list li:eq(" + currentSelection + ")")
+                        .addClass('selected');
+                }
+                break;
+            case 13: // Enter
+                if (currentSelection > -1) {
+                    var text = $("ul.proposal-list li:eq(" + currentSelection + ")").html();
+                    data.wd = $.trim(text);
+                    data.hints = [];
+                    currentSelection = -1;
+                    break;
+                } else {
+                    toSearch();
+                    break;
+                }
+            case 27: // Esc button
+                currentSelection = -1;
+                proposalList.empty();
+                break;
+        }
+    }
+
+    var qsData = {
+        'wd': 'JavaWeb',
+        'p': '3',
+        'cb': 'getData',
+        't': new Date().getMilliseconds().toString()
+    };
+
+    var getSearchResult = function (wd) {
+        var wd = wd || data.wd;
+        if (wd === null || wd.length === 0) {
+            data.hints = [];
+            return;
+        }
+        qsData.wd = wd || qsData.wd;
+        $.ajax({
+            async: false,
+            url: "http://suggestion.baidu.com/su",
+            type: "GET",
+            dataType: 'jsonp',
+            jsonp: 'jsoncallback',
+            data: qsData,
+            timeout: 5000,
+            success: function (result) {
+            },
+            error: function (xhr) {
+            }
+        });
+    }
+
+    function getData(result) {
+        data.hints = result['s']; //获取异步数据
+    }
+
+    var goNotes = function (index) {
+        var openLink = $("#tmp");
+        openLink.attr('href', 'next.html?id='+data.notes[index][0]);
+        openLink[0].click();
+    }
+
+    var toSearch = function () {
+        if (data.wd == null || data.wd.length === 0) {
+            return;
+        }
+        var url;
+        var openLink = $("#tmp");
+        var type = $("input[name='type']:checked").val();
+        if (type == 1) {
+            url = "index.html?wd=" + encodeURIComponent(data.wd);
+            openLink.attr('href', url);
+            openLink[0].click();
+        } else if (type == 2) {
+            url = "index.html?wd=" + encodeURIComponent(data.wd) + "&type=" + type;
+            openLink.attr('href', url);
+            openLink[0].click();
+        } else {
+            url = "https://www.so.com/s?ie=utf-8&ls=n2a27c3f091&q=" + encodeURIComponent(data.wd);
+            openLink.attr('href', url);
+            openLink[0].click();
+        }
+    }
+
+    var empty = function () {
+        data.hints = [];
+    }
+
+
+    var getNextNotes = function (pageSize, callback) {
+        $.ajax({
+            type: 'post',
+            url: '../getLuceneNotes',
+            data: {pageSize: pageSize, curPage: 1},
+            success: function (result) {
+                if (typeof result.notes !== "undefined") {
+                    data.notes = result.notes;
+                    data.curPage = result.curPage;
+                    data.pageCount = result.pageCount;
+                }
+            },
+            complete: function () {
+                if (typeof callback === "function") {
+                    callback();
+                }
+            }
+        })
+    }
+</script>
+</html>
