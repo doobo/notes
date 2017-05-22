@@ -9,7 +9,6 @@ import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.*;
 import org.springframework.stereotype.Component;
 
-import javax.print.Doc;
 import java.util.*;
 
 /**
@@ -33,11 +32,11 @@ public class NotesLucene {
     }
 
     //搜索管理员发布的已分享的信息
-    public Object getRootLuceneNoteByTime(Integer curPage,Integer pageSize,Integer rid){
+    public Object getNotesByLuceneUid(Integer curPage, Integer pageSize, Integer uid){
         Sort sort=new Sort(new SortField("time", SortField.Type.LONG
                 ,true));//true为降序排列
         BooleanQuery query = new BooleanQuery();
-        setRootNotesQuery(query,rid);
+        setQueryByUserId(query, uid);
         return changMap(AbstractLuceneIndex.doSearch(
                 query,curPage,pageSize,sort));
     }
@@ -70,6 +69,26 @@ public class NotesLucene {
 
     }
 
+    //通过指定子类别的id获取符合条件的Notes
+    public Object getNoteByLuceneCid(Integer curPage,Integer pageSize,Integer cid){
+        Sort sort=new Sort(new SortField("time", SortField.Type.LONG
+                ,true));//true为降序排列
+        BooleanQuery query = new BooleanQuery();
+        setQueryByCid(query, cid);
+        return changMap(AbstractLuceneIndex.doSearch(
+                query,curPage,pageSize,sort));
+    }
+
+    //搜索为图片的
+    public Object getIsPicNotes(Integer curPage,Integer pageSize){
+        Sort sort=new Sort(new SortField("time", SortField.Type.LONG
+                ,true));//true为降序排列
+        BooleanQuery query = new BooleanQuery();
+        setQueryByPic(query,1);
+        return returnPicMap(AbstractLuceneIndex.doSearch(
+                query,curPage,pageSize,sort));
+    }
+
     public NoteDocument getNoteDocumentByID(Integer id){
         Term term = new Term("id",id.toString());
         return  documentToNoteDocument(AbstractLuceneIndex.doSearch(term));
@@ -95,6 +114,8 @@ public class NotesLucene {
 
             notes.setTitle(doc.get("title"));
             notes.setDescription(doc.get("description"));
+            notes.setPic(doc.get("pic"));
+            notes.setIsPic(Integer.parseInt(doc.get("isPic")));
             return notes;
         }catch (Exception e){
             e.printStackTrace();
@@ -115,9 +136,25 @@ public class NotesLucene {
         query.add(q1, BooleanClause.Occur.MUST);
     }
 
-    private void setRootNotesQuery(BooleanQuery query,Integer rid){
+    private void setQueryByCid(BooleanQuery query, Integer cid){
         query.add(shareQ, BooleanClause.Occur.MUST);
         query.add(statusQ, BooleanClause.Occur.MUST);
+        query.add(checkQ, BooleanClause.Occur.MUST);
+        query.add(new TermQuery(new Term("chid", cid.toString()))
+                , BooleanClause.Occur.MUST);
+    }
+
+    private void setQueryByPic(BooleanQuery query,Integer isPic){
+        query.add(shareQ, BooleanClause.Occur.MUST);
+        query.add(statusQ, BooleanClause.Occur.MUST);
+        query.add(checkQ, BooleanClause.Occur.MUST);
+        query.add(new TermQuery(new Term("isPic",isPic.toString()))
+                , BooleanClause.Occur.MUST);
+    }
+    private void setQueryByUserId(BooleanQuery query, Integer rid){
+        query.add(shareQ, BooleanClause.Occur.MUST);
+        query.add(statusQ, BooleanClause.Occur.MUST);
+        query.add(checkQ, BooleanClause.Occur.MUST);
         query.add(new TermQuery(new Term("uid", rid.toString()))
                 , BooleanClause.Occur.MUST);
     }
@@ -151,7 +188,7 @@ public class NotesLucene {
                 , BooleanClause.Occur.MUST);
         String[] fields = { "title", "description" };
         Map<String, Float> boosts = new HashMap<String, Float>();
-        boosts.put("title", 10f);
+        boosts.put("title", 2f);
         MultiFieldQueryParser parser = new MultiFieldQueryParser(fields,
                 AbstractLuceneIndex.getAnalyzer(), boosts);
         try {
@@ -175,6 +212,29 @@ public class NotesLucene {
                 vector.addElement(doc.get("id"));
                 vector.addElement(doc.get("title"));
                 vector.addElement(doc.get("time"));
+                list.add(vector);
+            }
+            map.put("notes", list);
+        }
+        map.remove("doc");
+        return map;
+    }
+
+    /**
+     * 解析document
+     * @param map
+     * @return
+     */
+    private Object returnPicMap(TreeMap<String, Object> map) {
+        if (map.get("doc") != null) {
+            List<Vector<String>> list = new ArrayList();
+            for (Document doc
+                    : (ArrayList<Document>) map.get("doc")) {
+                Vector<String> vector = new Vector<>();
+                vector.addElement(doc.get("id"));
+                vector.addElement(doc.get("title"));
+                vector.addElement(doc.get("time"));
+                vector.addElement(doc.get("pic"));
                 list.add(vector);
             }
             map.put("notes", list);

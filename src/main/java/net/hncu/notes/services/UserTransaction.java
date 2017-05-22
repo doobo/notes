@@ -15,7 +15,7 @@ public interface UserTransaction {
     String ROOT_KEY = "note_root_20170503";
 
     //获取超级管理员的id
-    Integer getRootId();
+    Integer setOrGetRootId();
 
     //获取用户状态
     boolean getSystemStatus();

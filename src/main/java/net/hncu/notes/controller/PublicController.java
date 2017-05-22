@@ -33,11 +33,19 @@ public class PublicController {
     @ResponseBody
     @RequestMapping("getSearchResult")
     public Object getSearchResult(Integer curPage,Integer pageSize,String wd,Integer type){
-//        System.out.println(wd+"   "+type);
         if(type != null && type == 2){
             return nl.getTitleSearchResult(curPage,pageSize,wd);
         }
         return nl.getTitleOrDescResult(curPage,pageSize,wd);
+    }
+
+    @ResponseBody
+    @RequestMapping("getNotesByLuceneUid")
+    public Object getNotesByLuceneUid(Integer curPage,Integer pageSize,Integer uid){
+        if(curPage == null || pageSize == null){
+            curPage =1;pageSize=3;
+        }
+        return nl.getNotesByLuceneUid(curPage,pageSize,uid);
     }
 
     @ResponseBody
@@ -52,8 +60,12 @@ public class PublicController {
 
     @ResponseBody
     @RequestMapping("getChildType")
-    public Object getChildTypeByMid(Integer mid){
-        return nt.getChildTypeByMID(mid);
+    public Object getChildTypeByMid(Integer mid,HttpSession session){
+        Object obj = getUid(session);
+        if(obj instanceof Integer){
+            return nt.getChildTypeWithMidByUid(mid,(Integer) obj,getRid());
+        }
+        return nt.getChildTypeWithMidByUid(mid,null,getRid());
     }
 
 
@@ -67,7 +79,7 @@ public class PublicController {
     @ResponseBody
     @RequestMapping("getNotesByCid")
     public Object getNoteByCID(Integer curPage,Integer pageSize,Integer cid){
-        return nt.getDelNotesByCID(curPage,pageSize,cid);
+        return nl.getNoteByLuceneCid(curPage,pageSize,cid);
     }
 
     @ResponseBody
@@ -156,9 +168,20 @@ public class PublicController {
         return false;
     }
 
+    @ResponseBody
+    @RequestMapping("getHeadImg")
+    public Object getHeadImgByUserName(String username,HttpServletRequest request){
+        String savePath = request.getServletContext().getRealPath("/images/head/");
+        savePath = savePath + username +".jpg";
+        if(new File(savePath).exists()){
+            return username+".jpg";
+        }
+        return "avatar.png";
+    }
+
     //获取超级管理员的id
     private Integer getRid(){
-        return ut.getRootId();
+        return ut.setOrGetRootId();
     }
 
     private Object getUid(HttpSession session){

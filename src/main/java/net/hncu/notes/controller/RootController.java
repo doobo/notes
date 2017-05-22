@@ -1,6 +1,5 @@
 package net.hncu.notes.controller;
 
-import net.hncu.notes.lucene.NotesLucene;
 import net.hncu.notes.lucene.util.AbstractLuceneIndex;
 import net.hncu.notes.services.ManagerTransaction;
 import net.hncu.notes.services.NotesTransaction;
@@ -53,7 +52,7 @@ public class RootController {
             ,Long endTime,String wd){
         StringBuffer terms = AbstractServices.setHQLByParams(check,share,wd,
                 startTime,endTime);
-        return mt.getNotesByTerms(curPage,pageSize,ut.getRootId()
+        return mt.getNotesByTerms(curPage,pageSize,ut.setOrGetRootId()
                 ,terms.toString(),startTime,endTime,
                 AbstractServices.getLikeWd(wd));
     }
@@ -76,6 +75,12 @@ public class RootController {
     @RequestMapping("getMainType")
     public Object getMainType(){
         return nt.getMainType();
+    }
+
+    @ResponseBody
+    @RequestMapping("getRootMainType")
+    public Object getRootMainType(){
+        return nt.getMainTypeByUid(ut.setOrGetRootId(),ut.setOrGetRootId());
     }
 
     @ResponseBody
@@ -174,7 +179,7 @@ public class RootController {
     @ResponseBody
     @RequestMapping("getRootNotes")
     public Object getNotesNoCheck(Integer curPage,Integer pageSize){
-        return nt.getRootNotes(curPage,pageSize,ut.getRootId());
+        return nt.getRootNotes(curPage,pageSize,ut.setOrGetRootId());
     }
 
     @ResponseBody
@@ -320,7 +325,7 @@ public class RootController {
                           String simpleDesc,Integer chid,Integer share
             ,String images){
         return nt.addNote(title,description,mid,simpleDesc
-                ,chid,share,ut.getRootId(),images,1);
+                ,chid,share,ut.setOrGetRootId(),images,1);
     }
 
     @ResponseBody
@@ -340,6 +345,6 @@ public class RootController {
     }
 
     private Integer getUID(){
-        return ut.getRootId();
+        return ut.setOrGetRootId();
     }
 }

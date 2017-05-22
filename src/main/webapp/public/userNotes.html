@@ -74,7 +74,7 @@
 	<div class="row">
 			<div class="box box-primary">
 				<div class="box-header">
-					<h3 class="box-title">{{data.typename}}</h3>
+					<h3 class="box-title">{{data.account.toUpperCase()}}{{'-'+data.nickname}}分享的笔记</h3>
 					<div class="box-tools">
 						<div class="input-group input-group-sm" style="width: 150px;">
 							<input type="text" name="table_search" v-model="title"
@@ -137,8 +137,8 @@
 <script type="text/javascript" src="../js/jquery.twbsPagination.min.js"></script>
 <script type="text/javascript">
 	$(function () {
-		getCid(function () {
-			getNextPage(1,8,data.cid,function () {
+		getUid(function () {
+			getNextPage(1,8,data.uid,function () {
 				resetPage();
 			});
 		});
@@ -151,16 +151,18 @@
 			pageCount:data.pageCount,
 			callback:function (page) {
 				if(page == data.curPage) return;
-                getNextPage(page,data.pageSize,data.cid);
+                getNextPage(page,data.pageSize,data.uid);
             }
 		});
     }
 
-	var getCid = function (callback) {
-		data.cid = qiao.search('cid');
-		data.typename = decodeURIComponent(qiao.search('typename'));
-		if(!verify(qiao.search('cid'),'int') ||
-			isEmpty(decodeURIComponent(qiao.search('typename')))){
+	var getUid = function (callback) {
+		data.uid = qiao.search('uid');
+		data.nickname = decodeURIComponent(qiao.search('nickname'));
+		data.account= superTrim(qiao.search('account'));
+		if(!verify(qiao.search('uid'),'int') ||
+			isEmpty(decodeURIComponent(qiao.search('nickname')))
+			|| !verify(superTrim(qiao.search('account')),'username')){
             toErrorPage();
 		}else{
             if(typeof callback === "function"){
@@ -171,20 +173,21 @@
 
     data = {
         title:'',
-		cid:1,
+		uid:1,
 		curPage:1,
 		pageSize:8,
 		pageCount:1,
         count:1,
         notes:[],
-		typename:''
+        nickname:'',
+        account:''
     }
 
-    var getNextPage = function (curPage,pageSize,cid,callback) {
+    var getNextPage = function (curPage,pageSize,uid,callback) {
 		$.ajax({
 		    type:'post',
-			url:'getNotesByCid',
-			data:{curPage:curPage,pageSize:pageSize,cid:cid},
+			url:'getNotesByLuceneUid',
+			data:{curPage:curPage,pageSize:pageSize,uid:uid},
 			success:function (result) {
 				data.notes = result.notes;
                 data.curPage = result.curPage;

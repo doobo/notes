@@ -79,12 +79,14 @@
 				<tr>
 					<th>分类名称</th>
 					<th>所属主分类</th>
+					<th>创建者</th>
 					<th>创建日期</th>
 					<th>管理工具</th>
 				</tr>
 				<tr v-for="(child , index) in childTypes">
 					<td>{{child[1]}}</td>
 					<td>{{child[3]}}</td>
+					<td>{{child[2]}}</td>
 					<td>{{moment(child[4]).format('YYYY-MM-DD HH:mm:ss')}}</td>
 					<td>
 						<button @click="updateChildType(child[0],index)" class="btn btn-default btn-xs fa fa-edit">子类信息</button>

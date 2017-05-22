@@ -63,6 +63,16 @@ public class NotesTransactionImpl implements NotesTransaction {
 
     @Override
     public Object getChildTypeWithMidByUid(Integer mid,Integer uid,Integer rid){
+        if(uid == null ){
+            String hql = "SELECT new ChildType(c.id, c.typename) FROM ChildType c"
+                    +" WHERE c.mainType.id = :mid AND" +
+                    " c.user.id=:rid ORDER BY c.user.id";
+            return hb.getQueryByHQL(hql)
+                    .setInteger("mid", mid)
+                    .setInteger("rid",rid)
+                    .list();
+        }
+
         String hql = "SELECT new ChildType(c.id, c.typename) FROM ChildType c"
                 +" WHERE c.mainType.id = :mid AND (c.user.id = :uid " +
                 "OR c.user.id=:rid) ORDER BY c.user.id";
@@ -398,7 +408,8 @@ public class NotesTransactionImpl implements NotesTransaction {
     @Override
     public Object getNoteByID(Integer id){
         String hql = "SELECT  n.title,n.user.username,n.firstTime," +
-                "n.childType.typename,n.description,n.id,n.childType.id "
+                "n.childType.typename,n.description,n.id,n.childType.id" +
+                ",n.user.id,n.user.nickname"
                 +" FROM Notes n WHERE  n.status = 0 AND n.id = "+id;
         return hb.getQueryByHQL(hql,null,null).list();
     }
@@ -462,18 +473,18 @@ public class NotesTransactionImpl implements NotesTransaction {
     @Override
     public Object getSearchInPicInfo(Integer curPage,Integer pageSize,String wd){
         TreeMap<String,Object> map = new TreeMap<>();
-        String hql = "SELECT count(*)  FROM  PicInfo p WHERE " +
-                "p.notes.status=0 AND p.width>=300";
+        String hql = "SELECT count(*)  FROM  PicInfo p " +
+                "WHERE p.notes.status=0 ";
         if(wd != null && !wd.isEmpty()){
             wd = AbstractServices.getLikeWd(wd);
-            hql = hql +" AND p.notes.title like :wd";
+            hql = hql +"AND p.notes.title like :wd";
             AbstractServices.setReturnMap(curPage,pageSize,map,hb.getQueryByHQL(hql)
                     .setString("wd",wd)
                     .uniqueResult());
             hql = "SELECT p.id,p.picPath,p.width,p.height,p.firstTime,p.notes.id," +
                     "p.notes.title"
                     +" FROM PicInfo p WHERE "
-                    + "p.notes.title like :wd AND p.width>=300 AND p.notes.status=0 ORDER BY p.notes desc";
+                    + "p.notes.title like :wd AND p.notes.status=0 ORDER BY p.notes desc";
             map.put("pics",hb.getQueryByHQL(hql,curPage,pageSize)
                     .setString("wd",wd)
                     .list());
@@ -482,7 +493,7 @@ public class NotesTransactionImpl implements NotesTransaction {
         setReturnMap(curPage, pageSize, map, hql);
         hql = "SELECT p.id,p.picPath,p.width,p.height,p.firstTime,p.notes.id"
                 +",p.notes.title FROM PicInfo p WHERE "
-                +"p.notes.status=0 AND p.width>=300 ORDER BY p.notes desc";
+                +"p.notes.status=0 ORDER BY p.notes desc";
         map.put("pics",hb.getQueryByHQL(hql,curPage,pageSize)
                 .list());
         return map;
@@ -567,9 +578,9 @@ public class NotesTransactionImpl implements NotesTransaction {
         Notes notes = new Notes(title,chid,userID,description,share);
         notes.setCheck(check);
         hb.addDataByClass(notes);
-        AbstractServices.insertImages(images, notes,hb);
         NoteDocument noteDocument = new NoteDocument(notes.getId(),title,simpleDesc
         ,userID,chid,mid,0,check,share);
+        AbstractServices.insertImages(images, notes,hb,noteDocument);
         AbstractLuceneIndex.updateDocumentByTerm(noteDocument,"id");
         return notes;
     }
@@ -599,9 +610,8 @@ public class NotesTransactionImpl implements NotesTransaction {
         NoteDocument noteDocument = new NoteDocument(notes.getId(),title,simpleDesc
                 ,notes.getUser().getId(),chid,mid,0,check,share);
         noteDocument.setFirstTime(notes.getFirstTime());
+        AbstractServices.insertImages(images, notes,hb,noteDocument);
         AbstractLuceneIndex.updateDocumentByTerm(noteDocument,"id");
-
-        AbstractServices.insertImages(images, notes,hb);
         return notes;
     }
 

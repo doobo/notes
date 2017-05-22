@@ -2,8 +2,6 @@ package demo;
 
 import net.hncu.notes.services.NotesTransaction;
 import net.hncu.notes.services.UserTransaction;
-import net.hncu.notes.services.impl.AbstractServices;
-import net.hncu.notes.table.User;
 import net.hncu.notes.utils.AbstractNotesUtils;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
@@ -28,7 +26,7 @@ public class HibernateUnit {
     @Test
     public void testHibernateCriteria(){
 
-        System.out.println(ut.getRootId());
+        System.out.println(ut.setOrGetRootId());
         System.out.println(ut.getSystemStatus());
     }
 

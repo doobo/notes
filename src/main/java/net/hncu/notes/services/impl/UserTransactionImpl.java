@@ -25,40 +25,33 @@ public class UserTransactionImpl implements UserTransaction {
     //true,为初始化，false重新初始化，添加root账号
     private boolean INIT_TAG = true;
 
-    //初始化超级管理员账号,true,为初始化，false重新初始化，添加root账号
-    private   boolean initSystem(){
-        if(rid != null) return true;
-        String hql = "FROM User u WHERE u.username = :root";
-        User user =(User) hb.getQueryByHQL(hql)
-                            .setString("root","root")
-                            .uniqueResult();
-        if(user == null){
-            user = new User("root","超级管理员"
-                    ,null,2,0);
-            user.setPassword(AbstractNotesUtils.getMD5(
-                    AbstractNotesUtils.getMD5("root",null)
-            ,ROOT_KEY));
-            hb.addDataByClass(user);
-            rid = user.getId();
-            return false;
-        }else{
-            rid = user.getId();
-            return true;
-        }
-    }
-
     @Override
-    public Integer getRootId(){
+    public Integer setOrGetRootId(){
         if(rid == null){
-            initSystem();
+            String account = "root";
+            String hql = "FROM User u WHERE u.username = :root";
+            User user =(User) hb.getQueryByHQL(hql)
+                    .setString("root",account)
+                    .uniqueResult();
+            if(user == null){
+                user = new User(account,"超级管理员"
+                        ,null,2,0);
+                user.setPassword(AbstractNotesUtils.getMD5(
+                        AbstractNotesUtils.getMD5("root","")
+                        ,ROOT_KEY));
+                hb.addDataByClass(user);
+                this.rid = user.getId();
+                this.INIT_TAG = false;
+            }else{
+                rid = user.getId();
+                this.INIT_TAG = true;
+            }
         }
         return rid;
     }
 
     @Override
     public boolean getSystemStatus(){
-        if(rid == null)
-            initSystem();
         return INIT_TAG;
     }
 

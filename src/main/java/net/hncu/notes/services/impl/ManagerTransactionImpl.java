@@ -195,7 +195,7 @@ public class ManagerTransactionImpl implements ManagerTransaction {
                         .uniqueResult());
             hql = "SELECT c.id,c.typename,c.user.username,c.mainType.typename,c.firstTime"
                     +" FROM ChildType c WHERE c.user.id = "+uid
-                    + " AND c.typename like :wd"+" ORDER BY c.mainType.id desc";
+                    + " AND c.typename like :wd"+" ORDER BY c.mainType.id desc,c.firstTime desc";
             map.put("childTypes",hb.getQueryByHQL(hql,curPage,pageSize)
                     .setString("wd",wd)
                     .list());
@@ -204,7 +204,7 @@ public class ManagerTransactionImpl implements ManagerTransaction {
 
         setReturnMap(curPage, pageSize, map, hql);
         hql = "SELECT c.id,c.typename,c.user.username,c.mainType.typename,c.firstTime"
-                +" FROM ChildType c WHERE c.user.id = "+uid+" ORDER BY c.mainType.id desc";
+                +" FROM ChildType c WHERE c.user.id = "+uid+" ORDER BY c.mainType.id desc,c.firstTime desc";
         map.put("childTypes",hb.getQueryByHQL(hql,curPage,pageSize).list());
         return map;
     }
@@ -400,11 +400,11 @@ public class ManagerTransactionImpl implements ManagerTransaction {
                 .setInteger("id",notes.getId())
                 .executeUpdate();
         //更新笔记在数据库中的图片名
-        AbstractServices.insertImages(images, notes,hb);
 
         NoteDocument noteDocument = new NoteDocument(notes.getId(),title,simpleDesc
                 ,userID,chid,mid,0,0,share);
         noteDocument.setFirstTime(notes.getFirstTime());
+        AbstractServices.insertImages(images, notes,hb,noteDocument);
 
         AbstractLuceneIndex.updateDocumentByTerm(noteDocument,"id");
         return notes;

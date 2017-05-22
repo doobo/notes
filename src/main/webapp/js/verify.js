@@ -28,7 +28,7 @@ params.englist = /^[a-zA-Z]+$/;
 params.chinese = /^[\u0391-\uFFE5]+$/;
 
 //验证用户昵称，字母、数字、下划线、空格、+、中文(不含中文标点符号)
-params.nickname = /^[a-zA-Z0-9. +\u4E00-\uFA29\uE7C7-\uE7F3]+$/;
+params.nickname = /^[a-zA-Z0-9(\.)(\+)(\_)(-)(\ )\u4E00-\uFA29\uE7C7-\uE7F3]+$/;
 
 //验证大于或等于1小于等于20位长度连续的字符串
 params.isnull = /^\S{1,20}$/ig;
@@ -114,7 +114,7 @@ function privateReplace(str) {
     else if(/\)/.test(str))
         str = str.replace(/\)/,'(\\))');
     else if(/\_/.test(str))
-        str = str.replace(/\_/,'(\_))');
+        str = str.replace(/\_/,'(\_)');
     else if(/\+/.test(str))
         str = str.replace(/\+/,'(\\+)');
     else if(/\-/.test(str))
@@ -196,6 +196,7 @@ function isExitStringParam(str,param) {
     return myReg.test(str);
 }
 
+//随机获取指定范围的随机整数
 function randomBy(under, over){
     if(!verify(under,'int')) under = false;
     if(!verify(over,'int')) over = false;
@@ -206,4 +207,10 @@ function randomBy(under, over){
         case 2: return parseInt(Math.random()*(over-under+1) + under);
         default: return 0;
     }
+}
+//跳转到错误页面，并把原页面url作为参数传递过去
+function toErrorPage(url) {
+    var url = url || '404.html';
+    window.location.href=url+'?url='
+        +encodeURIComponent(window.location.href);
 }

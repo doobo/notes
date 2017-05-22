@@ -73,7 +73,7 @@
     <div class="row">
         <div class="box box-primary">
             <div class="box-header with-border">
-                <h3 class="box-title"><a class="next" v-bind:href="'list.html?cid='+data.note[6]"
+                <h3 class="box-title"><a class="next" v-bind:href="'list.html?cid='+data.note[6]+'&typename='+encodeURIComponent(note[3])"
                                          target="_blank">{{data.note[3]}}</a></h3>
                 <div class="box-tools pull-right">
                     <a href="javascript:getPreNote();"
@@ -86,7 +86,8 @@
             <div class="box-body no-padding">
                 <div class="mailbox-read-info" style="margin-top: -20px;">
                     <h3>{{data.note[0]}}</h3>
-                    <h5>作者：{{data.note[1]}}
+                    <h5>作者：<a class="next" v-bind:href="'./userNotes.html?uid='+note[7]+'&account='+data.note[1]+'&nickname='+encodeURIComponent(note[8])">
+                        {{data.note[1]}}</a>
                         <span class="mailbox-read-time pull-right">创建日期：{{moment(note[2]).format('YYYY-MM-DD HH:mm:ss')}}</span></h5>
                 </div>
                 <!-- /.mailbox-read-info -->
@@ -104,11 +105,13 @@
             <!-- /.box-footer -->
             <div class="box-footer">
                 <div class="text-center">
+                    <div class="btn-group">
                     <button type="button"
                            v-show="data.pre" class="btn btn-default" onclick="getPreNote()">
                         <i class="fa fa-arrow-left"></i> 上一条</button>
                     <button v-show="data.next" type="button" class="btn btn-default" onclick="getNextNote();">下一条&nbsp;
                         <i class="fa  fa-arrow-right"></i></button>
+                    </div>
                 </div>
             </div>
             <!-- /.box-footer -->
@@ -161,6 +164,7 @@
             url:'getNoteByID',
             data:{id:id},
             success:function (result) {
+                console.log(result);
                 if(result.length == 0){
                     window.location.href='404.html?url='
                         +encodeURIComponent(window.location.href);

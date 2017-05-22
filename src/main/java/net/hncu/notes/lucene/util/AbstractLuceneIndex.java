@@ -372,6 +372,7 @@ public abstract class AbstractLuceneIndex implements LuceneIndexable {
             ArrayList<Document> docList = new ArrayList<>(pageSize);
             setDocToList(sdoc, docList);
             treeMap.put("curPage", curPage);
+            treeMap.put("pageSize", pageSize);
             treeMap.put("pageCount", searchStruct.pageCount);
             treeMap.put("count", searchStruct.count);
             treeMap.put("doc", docList);
@@ -458,11 +459,12 @@ public abstract class AbstractLuceneIndex implements LuceneIndexable {
                 return treeMap;
             }
             ArrayList<Document> docList = new ArrayList<>(pageSize);
-            setDocToList(sdoc, docList);
-            treeMap.put("curPage", curPage);
-            treeMap.put("pageCount", searchStruct.pageCount);
+            setDocToList(sdoc,docList);
+            treeMap.put("curPage",curPage);
+            treeMap.put("pageSize",pageSize);
+            treeMap.put("pageCount",searchStruct.pageCount);
             treeMap.put("count", searchStruct.count);
-            treeMap.put("doc", docList);
+            treeMap.put("doc",docList);
             return treeMap;
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage());

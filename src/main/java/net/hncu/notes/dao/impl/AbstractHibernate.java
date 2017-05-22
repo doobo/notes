@@ -28,7 +28,6 @@ public  class AbstractHibernate implements Hibernateable {
 
     /**
      * 保存对象实例到数据库
-     *
      * @param t
      * @param <T>
      * @return

@@ -109,13 +109,13 @@
 
 						<div class="item" v-for="(pic,index) in pics" style="width: 480px;height:241px;"
 							 v-bind:class="{active:0 == index}">
-							<a v-bind:href="'public/next.html?id='+pic[5]" target="_blank">
-								<img class="auto_image" width="480px" height="242px" v-bind:src="pic[1]" alt="">
+							<a v-bind:href="'public/next.html?id='+pic[0]" target="_blank">
+								<img class="auto_image" width="480px" height="242px" v-bind:src="pic[3]" alt="">
 								<div class="carousel-caption">
-									<p v-text="pic[6]">
+									<p v-text="pic[1]">
 									</p>
 									<p>
-										{{moment(pic[4])
+										{{moment(Number(pic[2]))
 										.format('YYYY-MM-DD HH:mm:ss')}}
 									</p>
 								</div>
@@ -265,7 +265,7 @@
                 complete:function () {
                     data.pageCount = randomBy(1,data.pageCount*2);
                 }
-            })
+            });
         }
 
         //获取最新分享的全部信息
@@ -302,16 +302,16 @@
         var getSearchResult = function (info, callback) {
             $.ajax({
                 type: 'get',
-                url: 'getSearchInPicInfo',
+                url: 'getNotesByLucenePic',
                 data: info,
                 success: function (result) {
-                    if(typeof result.pics == "undefined" ||
-						result.pics.length == 0){
+                    if(typeof result.notes == "undefined" ||
+						result.notes.length == 0){
                         if(typeof callback == "function"){
                             callback();
 						}
 					}else {
-                        data.pics = result.pics;
+                        data.pics = result.notes;
                         data.info.curPage = result.curPage;
                         data.info.pageSize = result.pageSize;
                     }

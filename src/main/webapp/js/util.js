@@ -1,3 +1,7 @@
+/**常用JS字符处理验证工具
+ * doobo@foxmail.com
+ * @type {Object}
+ */
 var params = new Object();
 
 //验证IP
@@ -33,7 +37,7 @@ params.nickname = /^[a-zA-Z0-9(\.)(\ )(\+)\u4E00-\uFA29\uE7C7-\uE7F3]+$/;
 //验证大于或等于1小于等于20位长度连续的字符串
 params.isnull = /^\S{1,20}$/ig;
 
-//验证函数
+//验证函数verify('123456','int')验证是否为整数
 function verify(str,pat){
     var thePat;
     thePat = params[pat];

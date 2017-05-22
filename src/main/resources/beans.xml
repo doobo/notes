@@ -17,8 +17,6 @@
 
 	<!-- 配置数据源, 整合其他框架, 事务等. -->
 	<context:property-placeholder location="classpath:db.properties" />
-
-
 	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
 		<property name="user" value="${jdbc.user}"></property>
 		<property name="password" value="${jdbc.password}"></property>
@@ -38,7 +36,7 @@
 		<!--<property name="configLocation" value="classpath:hibernate.cfg.xml"></property>-->
 
 
-		<!-- 使用 hibernateProperties 属相来配置 Hibernate 原生的属性 -->
+		<!-- 使用 hibernateProperties 属相来配置 Hibernate 原生的属性 validate | update | create | create-drop  -->
 		<property name="hibernateProperties">
 			<props>
 				<prop key="hibernate.dialect">org.hibernate.dialect.MySQL5InnoDBDialect</prop>

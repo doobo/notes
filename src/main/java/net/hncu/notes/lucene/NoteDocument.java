@@ -57,6 +57,16 @@ public class NoteDocument {
             ,fieldName = "share")
     private Integer share;
 
+    @LuceneAnnotation(
+            field=LuceneAnnotation.FieldEnum.StoredField
+            ,fieldName = "pic")
+    private String pic="";
+
+    @LuceneAnnotation(
+            field=LuceneAnnotation.FieldEnum.StringField
+            ,fieldName = "isPic")
+    private Integer isPic=0;
+
 
     public NoteDocument() {
     }
@@ -154,6 +164,22 @@ public class NoteDocument {
 
     public void setShare(Integer share) {
         this.share = share;
+    }
+
+    public String getPic() {
+        return pic;
+    }
+
+    public void setPic(String pic) {
+        this.pic = pic;
+    }
+
+    public Integer getIsPic() {
+        return isPic;
+    }
+
+    public void setIsPic(Integer isPic) {
+        this.isPic = isPic;
     }
 
     @LuceneAnnotation(

@@ -352,7 +352,7 @@
                                 自定义模板
                                 <span class="pull-right-container">
                   <span class="label label-danger pull-right">70%</span>
-                </span>
+                    </span>
                             </h4>
 
                             <div class="progress progress-xxs">
@@ -418,25 +418,6 @@ immediately after the control sidebar -->
                 }
             });
         }
-    }
-
-    var setPage = function () {
-        $('#pagination-demo').twbsPagination({
-            totalPages: data2.pageCount,
-            visiblePages: 7,
-            first:'首页',
-            last:'末页',
-            prev:'上一页',
-            next:'下一页',
-            onPageClick: function (event, page) {
-                if(page === data2.curPage) return;
-                getNextPage(page,data2.pageSize,function () {
-                    $("input[name=checkAll]")
-                        .prop("checked", false);
-                    data2.checks = [];
-                });
-            }
-        });
     }
 
     var data2 = {

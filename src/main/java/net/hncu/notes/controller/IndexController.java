@@ -2,7 +2,6 @@ package net.hncu.notes.controller;
 import net.hncu.notes.lucene.NotesLucene;
 import net.hncu.notes.services.NotesTransaction;
 import net.hncu.notes.services.UserTransaction;
-import net.hncu.notes.table.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -32,9 +31,8 @@ public class IndexController {
         if(curPage == null || pageSize == null){
             curPage =1;pageSize=3;
         }
-        return nl.getRootLuceneNoteByTime(curPage,pageSize,ut.getRootId());
+        return nl.getNotesByLuceneUid(curPage,pageSize,ut.setOrGetRootId());
     }
-
 
     @ResponseBody
     @RequestMapping("getSimpleNotes")
@@ -50,6 +48,12 @@ public class IndexController {
     public Object getSearchInPicInfo(Integer curPage,Integer pageSize
             ,String wd){
         return nt.getSearchInPicInfo(curPage,pageSize,wd);
+    }
+
+    @ResponseBody
+    @RequestMapping("getNotesByLucenePic")
+    public Object getNotesByLucenePic(Integer curPage,Integer pageSize){
+        return nl.getIsPicNotes(curPage,pageSize);
     }
 
     @RequestMapping("/next")

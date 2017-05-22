@@ -48,7 +48,7 @@ public class KingMasterController {
             ,HttpSession session,Integer check,Integer share,Long startTime
             ,Long endTime,String wd){
         return nt.getSearchNotesByStatus(curPage,pageSize,startTime,endTime
-                ,wd,check,share,0,ut.getRootId());
+                ,wd,check,share,0,ut.setOrGetRootId());
     }
 
     //搜索删除的笔记
@@ -58,7 +58,7 @@ public class KingMasterController {
             ,HttpSession session,Integer check,Integer share,Long startTime
             ,Long endTime,String wd){
         return nt.getSearchNotesByStatus(curPage,pageSize,startTime,endTime
-                ,wd,check,share,1,ut.getRootId());
+                ,wd,check,share,1,ut.setOrGetRootId());
     }
 
     @ResponseBody
@@ -123,7 +123,7 @@ public class KingMasterController {
     @RequestMapping("getSearchChildType")
     public Object getSimpleChildType(Integer curPage,Integer pageSize,String wd){
 
-        return nt.getSearchChildType(curPage,pageSize,wd,ut.getRootId());
+        return nt.getSearchChildType(curPage,pageSize,wd,ut.setOrGetRootId());
     }
 
     @ResponseBody

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.io.File;
+
 /**
  * Created by doobo@foxmail.com on 2017/3/28.
  */
@@ -44,15 +44,15 @@ public class StaticNotesController {
     @ResponseBody
     @RequestMapping("getMainType")
     public Object getMainType(HttpSession session){
-        System.out.println(ut.getRootId());
-       return nt.getMainTypeByUid(getUid(session),ut.getRootId());
+        System.out.println(ut.setOrGetRootId());
+       return nt.getMainTypeByUid(getUid(session),ut.setOrGetRootId());
     }
 
     @ResponseBody
     @RequestMapping("getChildType")
     public Object getChildTypeByMid(Integer mid,HttpSession session){
         if(mid == null) return false;
-        return nt.getChildTypeWithMidByUid(mid,getUid(session),ut.getRootId());
+        return nt.getChildTypeWithMidByUid(mid,getUid(session),ut.setOrGetRootId());
     }
 
     @ResponseBody

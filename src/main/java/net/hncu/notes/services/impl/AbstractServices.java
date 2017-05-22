@@ -1,6 +1,7 @@
 package net.hncu.notes.services.impl;
 
 import net.hncu.notes.dao.impl.AbstractHibernate;
+import net.hncu.notes.lucene.NoteDocument;
 import net.hncu.notes.table.Notes;
 import net.hncu.notes.table.PicInfo;
 import net.hncu.notes.utils.AbstractNotesUtils;
@@ -17,7 +18,8 @@ public abstract  class AbstractServices {
      * @param notes
      * @param hb
      */
-    public static void insertImages(String images, Notes notes, AbstractHibernate hb) {
+    public static void insertImages(String images, Notes notes
+            , AbstractHibernate hb,NoteDocument noteDocument) {
         if(images != null && !images.isEmpty()){
             String[] strings = images.split("~");
             for (String str:strings) {
@@ -39,6 +41,10 @@ public abstract  class AbstractServices {
                                     .uniqueResult();
                     if(count.toString().equals("0")){
                         hb.addDataByClass(picInfo);
+                        if(picInfo.getWidth()>300){
+                            noteDocument.setIsPic(1);
+                            noteDocument.setPic(picInfo.getPicPath());
+                        }
                     }else {
                         System.out.println("图片已存在-文章id:"+notes.getId());
                     }
