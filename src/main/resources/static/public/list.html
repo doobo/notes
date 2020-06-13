@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+	<meta charset="utf-8" lang="zh_CN">
+	<title>新建笔记</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<!-- 引入 Bootstrap -->
+	<link rel="stylesheet" href="../css/bootstrap.min.css"/>
+	<!-- HTML5 Shim 和 Respond.js 用于让 IE8 支持 HTML5元素和媒体查询 -->
+	<!-- 注意： 如果通过 file://  引入 Respond.js 文件，则该文件无法起效果 -->
+	<!--[if lt IE 9]>
+	<script type="text/javascript" src="../js/html5shiv.js"></script>
+	<script type="text/javascript" src="../js/respond.min.js"></script>
+	<![endif]-->
+	<!--AadminLTE基本资源-->
+	<link rel="stylesheet" href="../css/font-awesome.min.css"/>
+	<link rel="stylesheet" href="../css/style.css"/>
+</head>
+<body>
+<div class="container" id="app">
+	<div class="row clearfix" style="margin-bottom: -15px;">
+		<a href="#top" id="toTop"></a>
+		<nav class="navbar navbar-inverse" role="navigation">
+			<div class="navbar-header">
+				<a class="navbar-brand" href="#">微雅视频</a>
+			</div>
+			<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+				<ul class="nav navbar-nav">
+					<li>
+						<a href="../index.html">首页</a>
+					</li>
+					<li>
+						<a href="#">新建笔记</a>
+					</li>
+					<li>
+						<a href="allType.html">全部分类</a>
+					</li>
+					<li>
+						<a href="search.html">高级搜索</a>
+					</li>
+				</ul>
+				<form class="navbar-form navbar-left" role="search" action="index.html">
+					<div class="form-group">
+						<input name="wd"
+							   type="text"
+							   class="form-control" placeholder="搜索笔记..."/>
+					</div>
+					<button type="submit" class="btn btn-default">搜索</button>
+				</form>
+				<ul class="nav navbar-nav navbar-right">
+					<li>
+						<a href="javascript:nav_show();">网站导航</a>
+					</li>
+				</ul>
+			</div>
+		</nav>
+	</div><!--The Header End-->
+	<script>
+        var nav_show = function () {
+            qiao.bs.dialog({
+                id : 'nav_index',
+                url :'../public/nav.htm',
+                head:false,
+                foot:false,
+                backdrop: true,
+                big : true
+            },function () {
+                return true;
+            });
+        }
+	</script>
+
+	<div class="row">
+			<div class="box box-primary">
+				<div class="box-header">
+					<h3 class="box-title">{{data.typename}}</h3>
+					<div class="box-tools">
+						<div class="input-group input-group-sm" style="width: 150px;">
+							<input type="text" name="table_search" v-model="title"
+								   class="form-control pull-right" placeholder="本页搜索">
+
+							<div class="input-group-btn">
+								<button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button>
+							</div>
+						</div>
+					</div>
+				</div>
+				<!-- /.box-header -->
+				<div class="box-body table-responsive no-padding">
+					<table class="table table-hover">
+						<tbody>
+						<tr>
+							<th>序号</th>
+							<th>笔记标题</th>
+							<th>笔记作者</th>
+							<th>创建时间</th>
+						</tr>
+						<tr v-for="(item,index) in data.notes" v-if="checkName(item[1],title)">
+							<td>{{index+1}}</td>
+							<td><a class="a-btn" target="_blank"
+								   v-bind:href="'next.html?id='+item[0]">
+								{{item[1]}}</a></td>
+							<td>{{item[3]}}</td>
+							<td>{{moment(item[4]).format('YYYY-MM-DD HH:mm:ss')}}</td>
+						</tr>
+						</tbody>
+						<tfoot>
+							<td colspan="4">
+								<ul id="pagination-demo" class="pagination-sm"></ul>
+							</td>
+						</tfoot>
+					</table>
+				</div>
+				<!-- /.box-body -->
+			</div>
+			<!-- /.box -->
+	</div>
+
+	<div class="row">
+		<div class="col-md-12 text-center footer">
+					<span class="common">
+			 	Copyright &copy;2020 微雅视频
+			 	<a class="common" href="http://www.hncu.net" target="_blank">hncu.net</a>
+			 	All Rights Reserved.
+			 </span>
+		</div>
+	</div>
+	<!--底部声明结束-->
+</div>
+</body>
+<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../js/qiao.js"></script>
+<script type="text/javascript" src="../js/jquery.scrollToTop.min.js"></script>
+<script src="../js/moment.min.js"></script>
+<script src="../js/util.js"></script>
+<script type="text/javascript" src="../js/vuejs/vue.min.js"></script>
+<script type="text/javascript" src="../js/jquery.twbsPagination.min.js"></script>
+<script type="text/javascript">
+	$(function () {
+		getCid(function () {
+            getNextPage(1,9,data.cid,function () {
+                if(data.pageCount > 1)
+                $('#pagination-demo').twbsPagination({
+                    totalPages: data.pageCount,
+                    visiblePages: 7,
+                    first:'首页',
+                    last:'末页',
+                    prev:'上一页',
+                    next:'下一页',
+                    onPageClick: function (event, page) {
+                        if(data.curPage === page) return;
+                        getNextPage(page,data.pageSize,data.cid);
+                    }
+                });
+            });
+        });
+
+    })
+
+	//百度搜索提示关键词
+	var resultData = [];
+    var qsData = {
+        'wd': 'JavaWeb',
+        'p': '3',
+        'cb': 'getData',
+        't': new Date().getMilliseconds().toString()
+    };
+
+    var getSearchResult = function(wd,callback) {
+        qsData.wd = wd || qsData.wd;
+        $.ajax({
+            async: false,
+            url: "http://suggestion.baidu.com/su",
+            type: "GET",
+            dataType: 'jsonp',
+            data: qsData,
+            timeout: 5000,
+            success: function(result) {
+                console.log(result);
+			},
+            error: function(xhr) {},
+			complete:function () {
+				if(typeof callback === "function"){
+				    callback;
+				}
+            }
+        });
+    }
+
+    function getData(data) {
+        resultData = data['s']; //获取异步数据
+    }
+
+	var getCid = function (callback) {
+		data.cid = qiao.search('cid') || 1;
+		if(typeof callback === "function"){
+		   callback();
+		}
+    }
+
+    data = {
+        title:'',
+		cid:1,
+		curPage:1,
+		pageSize:1,
+		pageCount:1,
+        count:1,
+        notes:[],
+		typename:''
+    }
+
+    var getNextPage = function (curPage,pageSize,cid,callback) {
+		$.ajax({
+		    type:'post',
+			url:'getNotesByCid',
+			data:{curPage:curPage,pageSize:pageSize,cid:cid},
+			success:function (result) {
+				data.notes = result.Notes;
+                data.curPage = result.curPage;
+                data.pageSize = result.pageSize;
+                data.pageCount = result.pageCount;
+                data.typename  = result.Notes[0][5];
+            },
+			complete:function () {
+				if(typeof callback === "function"){
+					callback();
+				}
+            }
+		});
+    }
+
+    var vue = new Vue({
+        el:"#app",
+        data:data,
+        methods: {
+            checkName: function(dt,name) {
+                if(name.length === 0) {
+                    return true;
+                }
+                var myReg;
+                name = replaceSpecialChar(superTrim(name));
+                eval("var myReg = /" + name + "/ig;");
+                if(myReg.test(dt))
+                    return true;
+                return false;
+            }
+        }
+    });
+</script>
+</html>

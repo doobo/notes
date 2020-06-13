@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" lang="zh_CN">
+		<title>代码显示</title>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<!-- 引入 Bootstrap -->
+		<link rel="stylesheet" href="../../css/bootstrap.css" />
+		<link rel="stylesheet" href="prettify.css" />
+		<!-- HTML5 Shim 和 Respond.js 用于让 IE8 支持 HTML5元素和媒体查询 -->
+		<!-- 注意： 如果通过 file://  引入 Respond.js 文件，则该文件无法起效果 -->
+		<!--[if lt IE 9]>
+		<script type="text/javascript" src="../js/html5shiv.js" ></script>
+		<script type="text/javascript" src="../js/respond.min.js" ></script>
+      <![endif]-->
+	</head>
+	<body>
+		<br />
+<div style="width: 900px; margin: 0 auto;">
+<pre>Hello　word!
+$("pre").addClass("prettyprint");
+$("pre").addClass("linenums");
+$("pre").addClass("Lang-js");
+prettyPrint();
+</pre><br />
+		</div>
+		<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+		<script type="text/javascript" src="../jquery.min.js" ></script>
+		<script type="text/javascript" src="../bootstrap.min.js" ></script>
+		<script type="text/javascript" src="prettify.js" ></script>
+		<script>
+			$(function(){
+				$("pre").addClass("prettyprint");
+				$("pre").addClass("linenums");
+				$("pre").addClass("Lang-js");
+				prettyPrint();
+			});
+			
+		</script>
+	</body>
+</html>

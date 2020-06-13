@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>网站管理-管理员</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <!-- Bootstrap 3.3.6 -->
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="../css/font-awesome.min.css"/>
+    <!-- Theme style -->
+    <link rel="stylesheet" href="../js/AdminLTE/dist/css/AdminLTE.min.css">
+    <link rel="stylesheet" href="../js/AdminLTE/dist/css/skins/_all-skins.css">
+    <link rel="stylesheet" href="../css/bootstrap-datepicker3.min.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <!--[if lt IE 9]>
+    <script src="../js/html5shiv.min.js"></script>
+    <script src="../js/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body class="hold-transition skin-blue sidebar-mini">
+<div class="wrapper" id="kingMaster">
+    <!-- Main Header -->
+    <header class="main-header">
+        <!-- Logo -->
+        <a href="" class="logo">
+            <!-- mini logo for sidebar mini 50x50 pixels -->
+            <span class="logo-mini"><b>导航</b></span>
+            <!-- logo for regular state and mobile devices -->
+            <span class="logo-lg"><b>微雅视频-管理</b></span>
+        </a>
+        <!-- Header Navbar -->
+        <nav class="navbar navbar-static-top" role="navigation">
+            <!-- Sidebar toggle button-->
+            <a href="#" class="sidebar-toggle" data-toggle="offcanvas" role="button">
+                <span class="sr-only">Toggle navigation</span>
+            </a>
+            <!-- Navbar Right Menu -->
+            <div class="navbar-custom-menu">
+                <ul class="nav navbar-nav">
+                    <!-- User Account Menu -->
+                    <li class="dropdown user user-menu">
+                        <!-- Menu Toggle Button -->
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            <!-- The user image in the navbar-->
+                            <img v-bind:src="img" class="user-image" alt="User Image">
+                            <!-- hidden-xs hides the username on small devices so only the image appears. -->
+                            <span class="hidden-xs" v-text="user.nickname"></span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <!-- The user image in the menu -->
+                            <li class="user-header">
+                                <img v-bind:src="img" class="img-circle"
+                                     alt="User Image">
+                                <p>
+                                <span v-text="user.nickname"></span> - 管理员
+                                </p>
+                            </li>
+                            <script>
+                                var toNoteList = function () {
+                                    vue2.setMenu('笔记列表','笔记管理');
+                                    getPageByUrl('notes.html')
+                                }
+
+                                var toHead = function () {
+                                    vue2.setMenu('头像管理','个人中心');
+                                    getPageByUrl('head.html')
+                                }
+                                var toMaster = function () {
+                                    vue2.setMenu('修改信息','个人中心');
+                                    getPageByUrl('root.html')
+                                }
+                            </script>
+                            <!-- Menu Body -->
+                            <li class="user-body">
+                                <div class="row">
+                                    <div class="col-xs-4 text-center">
+                                        <a href="javascript:toNoteList();">笔记列表</a>
+                                    </div>
+                                    <div class="col-xs-4 text-center">
+                                        <a href="javascript:toHead();">头像管理</a>
+                                    </div>
+                                    <div class="col-xs-4 text-center">
+                                        <a href="javascript:updateIndex();">更新缓存</a>
+                                    </div>
+                                </div>
+                                <!-- /.row -->
+                            </li>
+                            <!-- Menu Footer-->
+                            <li class="user-footer">
+                                <div class="pull-left">
+                                    <a href="javascript:toMaster();" class="btn btn-default btn-flat">个人中心</a>
+                                </div>
+                                <div class="pull-right">
+                                    <a href="./clearSession" class="btn btn-default btn-flat">退出</a>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                    <!-- Control Sidebar Toggle Button
+                    <li>
+                        <a href="#" id="side" data-toggle="control-sidebar"><i class="fa fa-gears"></i></a>
+                    </li>
+                    -->
+                </ul>
+            </div>
+        </nav>
+    </header>
+    <!-- Left side column. contains the logo and sidebar -->
+    <aside class="main-sidebar">
+        <!-- sidebar: style can be found in sidebar.less -->
+        <section class="sidebar">
+            <!-- Sidebar user panel (optional) -->
+            <div class="user-panel">
+                <div class="pull-left image">
+                    <img v-bind:src="img" class="img-circle" alt="User Image">
+                </div>
+                <div class="pull-left info">
+                    <p v-text="user.nickname">用户昵称</p>
+                    <!-- Status -->
+                    <a href="#"><i class="fa fa-circle text-success"></i> 在线</a>
+                </div>
+            </div>
+            <!-- search form (Optional) -->
+            <form action="../public/index.html" method="get"
+                  class="sidebar-form" target="_blank">
+                <div class="input-group">
+                    <input type="text" name="wd" class="form-control" placeholder="搜索...">
+                    <span class="input-group-btn">
+                <button type="submit" name="search" id="search-btn" class="btn btn-flat"><i class="fa fa-search"></i>
+                </button>
+              </span>
+                </div>
+            </form>
+            <!-- /.search form -->
+            <!-- Sidebar Menu -->
+            <ul class="sidebar-menu">
+                <!-- Optionally, you can add icons to the links -->
+                <li class="treeview">
+                    <a href="javascript:void(0);" @click="setHeader('笔记管理')"><i class="fa fa-book"></i> <span>笔记管理</span>
+                        <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li>
+                            <a @click="setMenu('笔记列表','笔记管理')" href="javascript:getPageByUrl('notes.html')" fa-info>
+                                <i class="fa fa-th"></i>笔记列表</a>
+                        </li>
+                        <li>
+                            <a @click="setMenu('分类管理','笔记管理')" href="javascript:getPageByUrl('type.html')">
+                                <i class="fa fa-tags"></i>分类管理</a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="treeview">
+                    <a href="javascript:void(0);" @click="setHeader('用户管理')" >
+                        <i class="fa  fa-users"></i> <span>用户管理</span>
+                        <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+                    </a>
+                <ul class="treeview-menu">
+                    <li>
+                        <a @click="setMenu('个人中心','用户管理')" href="javascript:getPageByUrl('root.html')">
+                            <i class="fa  fa-user-md"></i>个人中心</a>
+                    </li>
+                    <li>
+                        <a @click="setMenu('管理员账户','用户管理')" href="javascript:getPageByUrl('users.html')">
+                            <i class="fa fa-user"></i>管理员账户</a>
+                    </li>
+                    </ul>
+                </li>
+
+                <li class="treeview">
+                    <a href="javascript:void(0);" @click="setHeader('系统管理')">
+                    <i class="fa  fa-gear"></i> <span>系统管理</span>
+                        <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li>
+                            <a @click="setMenu('图片管理','系统管理')" href="javascript:getPageByUrl('pic.html')">
+                                <i class="fa fa-image"></i>图片管理</a>
+                        </li>
+                        <li>
+                            <a @click="setMenu('分词测试','系统管理')" href="javascript:getPageByUrl('analyzer.html')">
+                                <i class="fa  fa-scissors"></i>分词测试</a>
+                        </li>
+                    </ul>
+                </li>
+                <li class="treeview">
+                    <a href="javascript:void(0);" @click="setHeader('回收管理')">
+                        <i class="fa  fa-recycle"></i> <span>回收管理</span>
+                        <span class="pull-right-container">
+              <i class="fa fa-angle-left pull-right"></i>
+            </span>
+                    </a>
+                    <ul class="treeview-menu">
+                        <li>
+                            <a @click="setMenu('已删除账号','回收管理')" href="javascript:getPageByUrl('delAccount.html')">
+                                <i class="fa fa-trash"></i>已删除账号</a>
+                        </li>
+                        <li>
+                            <a @click="setMenu('已删除笔记','回收管理')"  href="javascript:getPageByUrl('delNotes.html')">
+                                <i class="fa fa-trash"></i>已删除笔记</a>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+            <!-- /.sidebar-menu -->
+        </section>
+        <!-- /.sidebar -->
+    </aside>
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <!-- Content Header (Page header) -->
+        <section class="content-header">
+            <h1>{{header}}
+                <small>{{menu}}</small>
+            </h1>
+            <ol class="breadcrumb">
+                <li>
+                    <a href="#"><i class="fa fa-dashboard"></i>首页</a>
+                </li>
+                <li class="active">{{header}}</li>
+            </ol>
+        </section>
+
+        <!-- Main content -->
+        <section class="content">
+            <!-- Your Page Content Here -->
+            <div class="row" id="mainContent">
+
+                <div class="col-md-12">
+                    <div class="box box-primary">
+                        <div class="box-header">
+                            <h3 class="box-title">最新发布的笔记</h3>
+                            <div class="box-tools">
+                                <div class="input-group input-group-sm" style="width: 150px;">
+                                    <input type="text" name="table_search" v-model="title"
+                                           class="form-control pull-right" placeholder="本页搜索">
+
+                                    <div class="input-group-btn">
+                                        <button class="btn btn-primary"><i class="fa fa-search"></i>搜索</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- /.box-header -->
+                        <div class="box-body table-responsive no-padding">
+                            <table class="table table-hover">
+                                <tbody>
+                                <tr>
+                                    <th>序号</th>
+                                    <th>笔记标题</th>
+                                    <th>所属类别</th>
+                                    <th>创建时间</th>
+                                    <th>管理工具</th>
+                                </tr>
+                                <tr v-for="(item,index) in data2.notes"
+                                    v-if="checkName(item[1],title) && item[0] !== -1">
+                                    <td v-text="index+1"></td>
+                                    <td><a class="a-btn" target="_blank"
+                                           v-bind:href="'./next.html?id='+item[0]">
+                                        {{subStr(item[1],30)}}</a></td>
+                                    <td v-text="item[5]"></td>
+                                    <td>{{moment(item[4]).format('YYYY-MM-DD HH:mm:ss')}}</td>
+                                    <td>
+                                        <a v-bind:href="'./update.html?nid='+item[0]" target="_blank"
+                                                class="btn btn-default btn-xs fa  fa-check">修改</a>
+
+                                        <a v-bind:href="'./next.html?id='+item[0]" target="_blank"
+                                           class="btn btn-default btn-xs fa  fa-check">查看</a>
+                                    </td>
+                                </tr>
+                                </tbody>
+                                <tfoot>
+                                <td colspan="5" id="pagination">
+                                    <ul id="pagination-demo" class="pagination-sm"></ul>
+                                </td>
+                                </tfoot>
+                            </table>
+                        </div>
+                        <!-- /.box-body -->
+                    </div>
+                    <!-- /.box -->
+                </div>
+            </div>
+        </section>
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+
+    <!-- Main Footer -->
+    <footer class="main-footer">
+        <!-- To the right -->
+        <div class="pull-right hidden-xs">
+					<span class="common"><a href="../index.html">
+			微雅视频</a>
+	  </span>
+        </div>
+        <!-- Default to the left -->
+        <span class="common">
+			 	Copyright &copy;2020 微雅视频
+			 	<a class="common" href="http://www.hncu.net" target="_blank">hncu.net</a>
+			 	All Rights Reserved.
+	</span>
+    </footer>
+
+    <!-- Control Sidebar -->
+    <aside class="control-sidebar control-sidebar-dark">
+        <!-- Create the tabs -->
+        <ul class="nav nav-tabs nav-justified control-sidebar-tabs">
+            <li class="active">
+                <a href="#control-sidebar-home-tab" data-toggle="tab"><i class="fa fa-home"></i></a>
+            </li>
+            <li>
+                <a href="#control-sidebar-settings-tab" data-toggle="tab"><i class="fa fa-gears"></i></a>
+            </li>
+        </ul>
+        <!-- Tab panes -->
+        <div class="tab-content">
+            <!-- Home tab content -->
+            <div class="tab-pane active" id="control-sidebar-home-tab">
+                <h3 class="control-sidebar-heading">最新动态</h3>
+                <ul class="control-sidebar-menu">
+                    <li>
+                        <a href="javascript:;">
+                            <i class="menu-icon fa fa-birthday-cake bg-red"></i>
+
+                            <div class="menu-info">
+                                <h4 class="control-sidebar-subheading">活动一</h4>
+                                <p>活动日期</p>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+                <!-- /.control-sidebar-menu -->
+
+                <h3 class="control-sidebar-heading">任务进展</h3>
+                <ul class="control-sidebar-menu">
+                    <li>
+                        <a href="javascript:;">
+                            <h4 class="control-sidebar-subheading">
+                                自定义模板
+                                <span class="pull-right-container">
+                  <span class="label label-danger pull-right">70%</span>
+                </span>
+                            </h4>
+
+                            <div class="progress progress-xxs">
+                                <div class="progress-bar progress-bar-danger" style="width: 70%"></div>
+                            </div>
+                        </a>
+                    </li>
+                </ul>
+                <!-- /.control-sidebar-menu -->
+            </div>
+            <!-- /.tab-pane -->
+            <!-- Stats tab content -->
+            <div class="tab-pane" id="control-sidebar-stats-tab">可选项</div>
+            <!-- /.tab-pane -->
+            <!-- Settings tab content -->
+            <div class="tab-pane" id="control-sidebar-settings-tab">
+                <form method="post">
+                    <div class="form-group">
+                        <label class="control-label">更新缓存</label>
+                        <label onclick="updateIndex()" class="control-sidebar-subheading btn btn-primary">
+                            更新搜索索引
+                        </label>
+                    </div>
+                    <!-- /.form-group -->
+                </form>
+            </div>
+            <!-- /.tab-pane -->
+        </div>
+    </aside>
+    <!-- /.control-sidebar -->
+    <!-- Add the sidebar's background. This div must be placed
+immediately after the control sidebar -->
+    <div class="control-sidebar-bg"></div>
+</div>
+<!-- jQuery 2.2.3 -->
+<script src="../js/jquery.min.js"></script>
+<!-- Bootstrap 3.3.6 -->
+<script src="../js/bootstrap.min.js"></script>
+<script src="../js/jquery.slimscroll.min.js"></script>
+<!-- AdminLTE App -->
+<script src="../js/AdminLTE/dist/js/app.min.js"></script>
+<script type="text/javascript" src="../js/bootstrap-datepicker-min.js"></script>
+<script type="text/javascript" src="../js/jquery.twbsPagination.min.js"></script>
+<script src="../js/qiao.js"></script>
+<script src="../js/moment.min.js"></script>
+<script src="../js/vuejs/vue.min.js"></script>
+<script src="../js/root.js"></script>
+<script src="../js/md5.js"></script>
+<script src="../js/verify.js"></script>
+<script>
+    var resetPage = function () {
+        if(data2.pageCount >1){
+            resetPageNum({
+                el:'#pagination',
+                pageCount:data2.pageCount,
+                callback:function (page) {
+                    if(page == data2.curPage) return;
+                    getNextPage(page,data2.pageSize,function () {
+                        $("input[name=checkAll]")
+                            .prop("checked", false);
+                        data2.checks = [];
+                    });
+                }
+            });
+        }
+    }
+
+    var setPage = function () {
+        $('#pagination-demo').twbsPagination({
+            totalPages: data2.pageCount,
+            visiblePages: 7,
+            first:'首页',
+            last:'末页',
+            prev:'上一页',
+            next:'下一页',
+            onPageClick: function (event, page) {
+                if(page === data2.curPage) return;
+                getNextPage(page,data2.pageSize,function () {
+                    $("input[name=checkAll]")
+                        .prop("checked", false);
+                    data2.checks = [];
+                });
+            }
+        });
+    }
+
+    var data2 = {
+        header:'菜单',
+        menu:'',
+        title:'',
+        cid:1,
+        curPage:1,
+        pageSize:1,
+        pageCount:1,
+        count:1,
+        notes:[],
+        typename:'',
+        checks:[],
+        user:{},
+        img:'../images/head/avatar.png'
+    }
+
+    var getRoot = function (callback) {
+        $.ajax({
+            type:'post',
+            url:'./getRoot',
+            success:function (result) {
+                if(!result){
+                }else{
+                    if(typeof callback == "function"){
+                        callback(result);
+                    }
+                    data2.user = result;
+                }
+            }
+        })
+    }
+
+    var vue2 = new Vue({
+       el:"#kingMaster",
+       data:data2,
+       methods:{
+           setHeader:function(txt){
+                //data2.header = txt;
+                //data2.menu = '';
+            },
+            setMenu:function (txt,htxt) {
+                data2.menu = txt;
+                data2.header = htxt;
+            },
+           checkName: function(dt,name) {
+               name = superTrim(name);
+               if(name.length === 0) {
+                   return true;
+               }
+              return isExitStringParam(dt,replaceSpecialChar(name));
+           },
+           check:function (index,status) {
+               changeOneCheck(index);
+           }
+        }
+    });
+
+    var setImg = function (username) {
+        if(!isEmpty(username)){
+            $.ajax({
+                url:'isHeadImg',
+                type:'post',
+                data:{username:username},
+                success:function (result) {
+                    if(result){
+                        vue2.img = '../images/head/'+username+'.jpg';
+                    }else{
+                        vue2.img = '../images/head/avatar.png';
+                    }
+                }
+            });
+        }
+    }
+    /**
+     * 更新搜索索引的缓存
+     */
+    var updateIndex = function (callback) {
+        $.ajax({
+            type:'post',
+            url:'clearLuceneCache',
+            success:function (result) {
+                if(result){
+                    if(typeof callback !== "function"){
+                        qiao.bs.alert({
+                            id:'lu_index01',
+                            title:'更新缓存',
+                            msg:'已成功更新缓存^~^'
+                        },function () {
+
+                        });
+                    }else {
+                        callback();
+                    }
+                }
+            },
+            error:function () {
+                qiao.bs.alert({
+                    id:'lu_index01',
+                    title:'更新缓存',
+                    msg:'更新缓存失败！'
+                },function () {
+                })
+            }
+        });
+    }
+
+    /**
+     * 获取未审核数据
+     * @param curPage
+     * @param pageSize
+     * @param cid
+     * @param callback
+     */
+    var getNextPage = function (curPage,pageSize,callback) {
+        $.ajax({
+            type:'post',
+            url:'getRootNotes',
+            data:{curPage:curPage,pageSize:pageSize},
+            success:function (result) {
+                data2.notes = result.Notes;
+                data2.curPage = result.curPage;
+                data2.pageSize = result.pageSize;
+                data2.pageCount = result.pageCount;
+            },
+            complete:function () {
+                if(typeof callback === "function"){
+                    callback();
+                }
+            }
+        });
+    }
+
+    /**
+     * 复选框全选或全不选的函数
+     * @param {Object} allName 全选框的name，字符参数-'name'
+     * @param {Object} childName 子复选框的name，字符参数-'name'
+     */
+    function checkAll(allName, childName) {
+        var isChecked = $("input[name='" + allName + "']").prop("checked");
+        if(isChecked){
+            data2.checks = [];
+            $("input[name='" + childName + "']").each(function() {
+                //$(this).prop("checked", isChecked);
+                data2.checks.push($(this).attr("value"));
+            });
+        }else{
+            data2.checks = [];
+        }
+    }
+
+    var changeCheck = function (index,status,callback) {
+        var sendData = {
+            id:data2.notes[index][0],
+            check:status
+        };
+        $.ajax({
+            type:'post',
+            url:'changeCheck',
+            data:sendData,
+            success:function (result) {
+                if(result){
+                    if(typeof callback === "function"){
+                        callback();
+                    }
+                }
+            }
+        });
+    };
+    var changeOneCheck = function (index) {
+        if(data2.notes[index][0] !== -1)
+        changeCheck(index,1,function () {
+            vue2.$set(data2.notes[index],0,-1);
+        });
+    }
+
+    var changeCheckAll = function () {
+        var tmp = {title:'',msg:''};
+        tmp.title = '批量审核';
+        tmp.msg = '确认审核通过所选项？';
+        qiao.bs.confirm(tmp
+            ,function () {
+                try {
+                    $.each(data2.checks,function (order) {
+                        if(data2.notes[data2.checks[order]][0] !== -1)
+                            changeCheck(data2.checks[order],1);
+                    });
+                } catch (e) {
+                    console.log(e);
+                } finally {
+                    $.each(data2.checks,function (order) {
+                        vue2.$set(data2.notes[data2.checks[order]],0,-1);
+                    });
+                }
+            }),function () {
+        }
+    }
+    $(function () {
+        is_login('../isRoot',function () {
+            getRoot(function (user) {
+                setImg(user.username)
+            });
+            getNextPage(1,5,function () {
+                resetPage();
+                if(data2.notes.length > 0){
+                    updateIndex(function () {
+                        console.log('更新缓存……');
+                    });
+                }
+            });
+        });
+    });
+</script>
+</body>
+
+</html>

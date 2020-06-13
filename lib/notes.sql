@@ -1,0 +1,108 @@
+/*
+ Navicat Premium Data Transfer
+
+ Source Server         : 5fu8.com
+ Source Server Type    : MySQL
+ Source Server Version : 80018
+ Source Host           : 47.93.202.191:3306
+ Source Schema         : notes
+
+ Target Server Type    : MySQL
+ Target Server Version : 80018
+ File Encoding         : 65001
+
+ Date: 06/06/2020 23:24:31
+*/
+
+SET NAMES utf8mb4;
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- ----------------------------
+-- Table structure for N_CHILDTYPE
+-- ----------------------------
+DROP TABLE IF EXISTS `N_CHILDTYPE`;
+CREATE TABLE `N_CHILDTYPE`  (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `TYPENAME` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `DESCRIPTION` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `MAINTYPE_ID` int(11) NULL DEFAULT NULL,
+  `USER_ID` int(11) NOT NULL,
+  `FIRSTTIME` datetime(6) NULL DEFAULT NULL,
+  PRIMARY KEY (`ID`) USING BTREE,
+  INDEX `FKmb2a1mkjk2s9lyc9uteedajdt`(`MAINTYPE_ID`) USING BTREE,
+  INDEX `FK6x6gaq9efwy3apsge8vrvwll`(`USER_ID`) USING BTREE,
+  CONSTRAINT `"FK6x6gaq9efwy3apsge8vrvwll"` FOREIGN KEY () REFERENCES `"N_USER"` () ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `"FKmb2a1mkjk2s9lyc9uteedajdt"` FOREIGN KEY () REFERENCES `"N_MAINTYPE"` () ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for N_MAINTYPE
+-- ----------------------------
+DROP TABLE IF EXISTS `N_MAINTYPE`;
+CREATE TABLE `N_MAINTYPE`  (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `TYPENAME` varchar(40) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `DESCRIPTION` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `USER_ID` int(11) NOT NULL,
+  `FIRSTTIME` datetime(6) NULL DEFAULT NULL,
+  PRIMARY KEY (`ID`) USING BTREE,
+  UNIQUE INDEX `UK_iwi81m8vbwp54pw7ayj82mos7`(`TYPENAME`) USING BTREE,
+  INDEX `FKp675g989h2dvkvf8ao0bdam8i`(`USER_ID`) USING BTREE,
+  CONSTRAINT `"FKp675g989h2dvkvf8ao0bdam8i"` FOREIGN KEY () REFERENCES `"N_USER"` () ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for N_NOTES
+-- ----------------------------
+DROP TABLE IF EXISTS `N_NOTES`;
+CREATE TABLE `N_NOTES`  (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `TITLE` varchar(60) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `CHILDTYPE_ID` int(11) NOT NULL,
+  `USER_ID` int(11) NOT NULL,
+  `DESCRIPTION` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL,
+  `NOTE_CHECK` int(11) NULL DEFAULT 0,
+  `STATUS` int(11) NULL DEFAULT 0,
+  `SHARE` int(11) NULL DEFAULT 0,
+  `FIRSTTIME` datetime(6) NULL DEFAULT NULL,
+  PRIMARY KEY (`ID`) USING BTREE,
+  INDEX `FKfo8jofu6hx12ngtox8stc979b`(`CHILDTYPE_ID`) USING BTREE,
+  INDEX `FKbs9skglapxu8m7ipnm2f0sjj4`(`USER_ID`) USING BTREE,
+  CONSTRAINT `"FKbs9skglapxu8m7ipnm2f0sjj4"` FOREIGN KEY () REFERENCES `"N_USER"` () ON DELETE RESTRICT ON UPDATE RESTRICT,
+  CONSTRAINT `"FKfo8jofu6hx12ngtox8stc979b"` FOREIGN KEY () REFERENCES `"N_CHILDTYPE"` () ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for N_PICINFO
+-- ----------------------------
+DROP TABLE IF EXISTS `N_PICINFO`;
+CREATE TABLE `N_PICINFO`  (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `PICPATH` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `NOTES_ID` int(11) NULL DEFAULT NULL,
+  `WIDTH` int(11) NULL DEFAULT NULL,
+  `HEIGHT` int(11) NULL DEFAULT NULL,
+  `FIRSTTIME` datetime(6) NULL DEFAULT NULL,
+  PRIMARY KEY (`ID`) USING BTREE,
+  UNIQUE INDEX `UK_b3lrtsauh5x5em3e2hvwl0g9h`(`PICPATH`) USING BTREE,
+  INDEX `FKs5slc4r57398lf9qamc3odwqm`(`NOTES_ID`) USING BTREE,
+  CONSTRAINT `"FKs5slc4r57398lf9qamc3odwqm"` FOREIGN KEY () REFERENCES `"N_NOTES"` () ON DELETE RESTRICT ON UPDATE RESTRICT
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+
+-- ----------------------------
+-- Table structure for N_USER
+-- ----------------------------
+DROP TABLE IF EXISTS `N_USER`;
+CREATE TABLE `N_USER`  (
+  `ID` int(11) NOT NULL AUTO_INCREMENT,
+  `USERNAME` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `NICKNAME` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL,
+  `PASSWORD` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+  `TYPE` int(11) NULL DEFAULT 0,
+  `STATUS` int(11) NULL DEFAULT 0,
+  `SIGNTIME` datetime(6) NULL DEFAULT NULL,
+  PRIMARY KEY (`ID`) USING BTREE,
+  UNIQUE INDEX `UK_tjh00bkijrtuyb26q8lu5b3w2`(`USERNAME`) USING BTREE
+) ENGINE = InnoDB AUTO_INCREMENT = 1 CHARACTER SET = utf8mb4 COLLATE = utf8mb4_0900_ai_ci ROW_FORMAT = Dynamic;
+
+SET FOREIGN_KEY_CHECKS = 1;

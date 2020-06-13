@@ -1,0 +1,64 @@
+<style>
+    #temp{
+        margin-top: -20px;
+        margin-left: -30px;
+        margin-bottom: -20px;
+    }
+    .alert {
+        filter: alpha(opacity=100); /* IE */
+        -moz-opacity: 1.0; /* Moz + FF */
+        opacity: 1.0;
+        position: absolute;
+    }
+
+    /*#tmp div img{*/
+            /*position:absolute;*/
+            /*filter:alpha(opacity=0,finishopacity=100,*/
+            /*style=1,startx=0,starty=85,finishx=150,finishy=85);*/
+    /*}*/
+
+    .img_div{
+        position:absolute;
+        z-indent:2;
+        display:block;
+        text-align:center;
+        background-color: #2c4762;
+    }
+
+    .img_div a{
+        color: white;
+        font-size: xx-large;
+        padding: 10px;
+        text-decoration:none;
+    }
+</style>
+<div id="temp" class="alert" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+    <div style="position:relative;display:block;">
+        <img v-bind:src="vue.tmp.src" v-bind:width="vue.tmp.width+'px;'"
+             onclick="nextPic()">
+        <div class="img_div" style="margin-top: -40px;"
+             v-bind:style="{width:vue.tmp.width + 'px'}">
+                <a v-bind:href="'./next.html?id='+vue.tmp.href"
+               v-text="vue.tmp.title" target="_blank"></a>
+        </div>
+    </div>
+</div>
+<script>
+    var tmp = new Vue({
+        el: '#temp',
+        data: {},
+        methods:{
+        }
+    });
+
+    var nextPic = function () {
+        vue.showPhoto(vue.tmp.index+1);
+    }
+    $(function () {
+        var style = 'position: fixed; top: 0px; display: block; padding-left: 17px;';
+        $("#photoshow").attr("style", style);
+        $("div.modal-content").removeClass('modal-content');
+        style="width: 300px;display: block;"
+        $("div.modal-dialog.modal-lg").attr("style",style);
+    });
+</script>

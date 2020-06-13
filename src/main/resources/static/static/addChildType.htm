@@ -1,0 +1,47 @@
+<style type="text/css">
+	textarea{
+		resize: none;
+	}
+</style>
+
+<div class="row">
+<form class="form-inline text-center" name="mainForm">
+	<div class="form-group" style="margin-bottom: 20px;">
+		<label>子类别名称：</label>
+	</div>
+	<div class="form-group" style="margin-bottom: 20px;">
+		<input name="typename" type="text" size="20" onkeyup="checkTypeName(20)"
+			   ng-model="typename"
+			   class="form-control"
+			   placeholder="请输入子类别名称..." style="height: 28px;" />
+	</div>
+	<br />
+
+	<div class="form-group pull-left" style="margin-left: 10px;">
+		<label>分类描述：</label>
+	</div>
+	<div class="form-group">
+		<textarea cols="110" name="description" rows=6
+		 onkeyup="checkLength(200)"></textarea>
+	</div>
+</form>
+</div>
+
+<script>
+    $(function () {
+
+    });
+    var checkLength = function(lg) {
+        var content = $("textarea[name=description]").val();
+        if (content.length > lg) {
+            $("textarea").val(content.substring(0, lg));
+        }
+    }
+
+    var checkTypeName = function (lg) {
+        var content = $("input[name=typename]").val();
+        if(content.length > lg){
+            $("input[name=typename]").val(content.substring(0, lg));
+		}
+    }
+</script>

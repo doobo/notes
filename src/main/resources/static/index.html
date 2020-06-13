@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html xmlns:v-bind="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta charset="utf-8" lang="zh_CN">
+		<title>微雅视频-首页</title>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<!-- 引入 Bootstrap -->
+		<link rel="stylesheet" href="css/bootstrap.min.css" />
+		<link rel="stylesheet" href="css/style.css" />
+		<!-- HTML5 Shim 和 Respond.js 用于让 IE8 支持 HTML5元素和媒体查询 -->
+		<!-- 注意： 如果通过 file://  引入 Respond.js 文件，则该文件无法起效果 -->
+		<!--[if lt IE 9]>
+		<script type="text/javascript" src="js/html5shiv.js" ></script>
+		<script type="text/javascript" src="js/respond.min.js" ></script>
+      	<![endif]-->
+		<!--AadminLTE基本资源-->
+		<link rel="stylesheet" href="./js/AdminLTE/dist/css/AdminLTE.min.css">
+		<link rel="stylesheet" href="css/font-awesome.min.css" />
+		<style>
+			.auto_image{
+				border:0;
+				margin:0;
+				padding:0;
+				max-width:469px;
+				max-height: 242px;
+				/*width:expression(this.width>469?"469px":this.width);!*ie6-7*!*/
+				/*height:expression(this.height>246?"246px":this.height);!*ie6-7*!*/
+			}
+		</style>
+	</head>
+	<body>
+	<div class="container" id="app">
+	<div class="row clearfix" style="margin-bottom: -15px;">
+			<a href="#top" id="toTop"></a>
+			<nav class="navbar navbar-inverse" role="navigation">
+			    <div class="navbar-header">
+			        <a class="navbar-brand" href="#">微雅视频</a>
+			    </div>
+				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+					<ul class="nav navbar-nav">
+						<li class="active">
+							 <a href="">首页</a>
+						</li>
+						<li>
+							 <a href="static/index.html">新建笔记</a>
+						</li>
+						<li>
+							 <a href="public/allType.html">全部分类</a>
+						</li>
+						<li>
+							 <a href="public/search.html">高级搜索</a>
+						</li>
+					</ul>
+					<form class="navbar-form navbar-left" role="search" action="./public/index.html">
+						<div class="form-group">
+							<input type="text" name="wd" class="form-control" placeholder="搜索笔记..." />
+						</div> <button type="submit" class="btn btn-default">搜索</button>
+					</form>
+					<ul class="nav navbar-nav navbar-right">
+						<li>
+							 <a href="javascript:nav_show();">网站导航</a>
+						</li>
+					</ul>
+				</div>
+			</nav>
+	</div><!--The Header End-->
+	<script>
+		var nav_show = function () {
+			qiao.bs.dialog({
+				id : 'nav_index',
+				url :'./nav.htm',
+				head:false,
+				foot:false,
+				backdrop: true,
+				big : true
+			},function () {
+				return true;
+			});
+		}
+	</script>
+	<div class="row">
+	<div class="col-md-6" style="margin-left: -15px;">
+		<div class="box box-primary" >
+			<!-- /.box-header -->
+			<div class="box-body no-padding">
+				<div id="carousel-example-generic" class="carousel slide" data-ride="carousel" >
+					<ol class="carousel-indicators">
+						<li data-target="#carousel-example-generic" data-slide-to="0" class="active"></li>
+						<li data-target="#carousel-example-generic" data-slide-to="1" class=""></li>
+						<li data-target="#carousel-example-generic" data-slide-to="2" class=""></li>
+					</ol>
+					<div class="carousel-inner">
+						<div class="item" v-for="(note,index) in ns"
+							 v-bind:class="{active:0 == index}" v-if="pics.length == 0"  style="width: 480px;height:241px;">
+							<a v-bind:href="'public/next.html?id='+note[0]" target="_blank">
+								<img class="auto_image" height="242px" width="480px" v-bind:src="data.imgs[index]" alt="">
+								<div class="carousel-caption">
+									<h4>
+										{{note[1]}}
+									</h4>
+									<p>
+										{{moment(Number(note[2]))
+										.format('YYYY-MM-DD HH:mm:ss')}}
+									</p>
+								</div>
+							</a>
+						</div>
+
+						<div class="item" v-for="(pic,index) in pics" style="width: 480px;height:241px;"
+							 v-bind:class="{active:0 == index}">
+							<a v-bind:href="'public/next.html?id='+pic[5]" target="_blank">
+								<img class="auto_image" width="480px" height="242px" v-bind:src="pic[1]" alt="">
+								<div class="carousel-caption">
+									<p v-text="pic[6]">
+									</p>
+									<p>
+										{{moment(pic[4])
+										.format('YYYY-MM-DD HH:mm:ss')}}
+									</p>
+								</div>
+							</a>
+						</div>
+					</div>
+					<a class="left carousel-control" href="#carousel-example-generic" data-slide="prev">
+						<span class="fa fa-angle-left"></span>
+					</a>
+					<a class="right carousel-control" href="#carousel-example-generic" data-slide="next">
+						<span class="fa fa-angle-right"></span>
+					</a>
+				</div>
+			</div>
+			<!-- /.box-body -->
+		</div>
+		<!-- /.box -->
+	</div>
+
+	<div class="col-md-6 no-padding" style="width: 492px;">
+		<div class="box box-primary">
+			<div class="box-header with-border">
+				<i class="fa fa-comments"></i>
+				<h3 class="box-title">站内信息推荐</h3>
+			</div>
+			<!-- /.box-header -->
+			<div class="box-body">
+				<p class="text-light-blue"
+				   v-for="(item,index) in notes">
+					<a v-bind:href="'./public/next.html?id='+item[0]" target="_blank">{{item[1]}}</a>
+					<span class="pull-right">{{moment(Number(item[2]))
+										.format('YYYY-MM-DD HH:mm:ss')}}</span></p>
+				<!--<p class="text-green">Text green to emphasize success</p>-->
+
+				<!--<p class="text-aqua">Text aqua to emphasize info</p>-->
+
+				<!--<p class="text-light-blue">Text light blue to emphasize info (2)</p>-->
+
+				<!--<p class="text-red">Text red to emphasize danger</p>-->
+
+				<!--<p class="text-yellow">Text yellow to emphasize warning</p>-->
+
+				<!--<p class="text-muted">Text muted to emphasize general</p>-->
+			</div>
+			<!-- /.box-body -->
+		</div>
+		<!-- /.box -->
+	</div>
+
+</div>
+
+	<div class="row clearfix" style="margin-top: 0px;">
+		<div class="row" style="word-break:break-all;">
+		<div class="col-md-4" v-for="(note,index) in tmp">
+			<!-- USERS LIST -->
+			<div v-bind:class="['box' ,index%2==0?'box-primary':'box-warning']">
+				<div class="box-header with-border">
+					<h3 class="box-title" v-if="note[1].length<10">
+						{{note[1]}}
+					</h3>
+					<h3 class="box-title" v-if="note[1].length>=10">
+						{{note[1].substring(0,10)+'...'}}
+					</h3>
+					<div class="box-tools pull-right">
+						<button type="button" class="btn btn-box-tool"
+								data-widget="collapse"><i class="fa fa-minus"></i>
+						</button>
+						<button type="button" class="btn btn-box-tool"
+								data-widget="remove"><i class="fa fa-times"></i>
+						</button>
+					</div>
+				</div>
+				<!-- /.box-header -->
+				<div class="box-body no-padding" style="display: block;height:120px;">
+					<p v-html="getChinese(note[3])"></p>
+					<span>创建时间:&nbsp;{{moment(Number(note[2]))
+						.format('YYYY-MM-DD HH:mm:ss')}}
+					</span>
+				</div>
+				<!-- /.box-body -->
+				<div class="box-footer text-center" style="display: block;">
+					<a target="_blank" v-bind:href="'public/next.html?id='+note[0]">查看详细</a>
+				</div>
+				<!-- /.box-footer -->
+			</div>
+			<!--/.box -->
+		</div>
+	</div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-12 text-center footer">
+		 <span class="common">
+		 	Copyright &copy;2020 微雅视频
+		 	<a class="common" href="http://www.hncu.net" target="_blank">hncu.net</a>
+		 	All Rights Reserved.
+		 </span>
+		</div>
+	</div>
+</div><!--主内容区域结束-->
+</body>
+	<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+	<script type="text/javascript" src="js/jquery.min.js"></script>
+	<!-- 包括所有已编译的插件 -->
+	<script type="text/javascript" src="js/bootstrap.min.js"></script>
+	<script src="js/jquery.scrollToTop.min.js"></script>
+	<script type="text/javascript" src="js/AdminLTE/dist/js/app.js"></script>
+	<script src="js/qiao.js"></script>
+	<script src="js/verify.js"></script>
+	<script src="js/moment.min.js"></script>
+	<script src="js/vuejs/vue.min.js"></script>
+	<script type="text/javascript">
+        var data = {
+            index:1,
+            notes:[],
+			ns:[],
+            pageCount:1,
+            imgs:['images/tu1.jpg','images/tu2.jpg','images/tu3.jpg'],
+            tmp:[],
+			info:{curPage:1,pageSize:3},
+			pics:[]
+        }
+
+        var app = new Vue({
+            el:"#app",
+            data:data
+        });
+
+        //获取超级管理员发布的信息
+        var getNextNotes = function (index,pageSize,callback) {
+            var pageSize = pageSize || 6;
+            $.ajax({
+                type:'post',
+                url:'getLuceneNotes',
+                data:{pageSize:pageSize,curPage:index},
+                success:function (result) {
+                    if(typeof result.notes !== "undefined"
+						||  result.notes.length > 0){
+                        if(typeof callback === "function"){
+                            callback(result.notes);
+                        }else{
+                            data.notes = result.notes;
+                            data.pageCount = result.pageCount;
+						}
+                    }
+                },
+                complete:function () {
+                    data.pageCount = randomBy(1,data.pageCount*2);
+                }
+            })
+        }
+
+        //获取最新分享的全部信息
+        var getNoteContent = function (index,callback) {
+            $.ajax({
+                type:'post',
+                url:'getSimpleNotes',
+                data:{pageSize:6,curPage:index},
+                success:function (result) {
+                    if(result.notes !== "undefined" || result.notes.length > 0) {
+                        data.index = result.curPage;
+                        data.pageCount = result.pageCount;
+                        $.each(result.notes,function () {
+                            data.tmp.push(this);
+                        });
+                    }
+                },
+                complete:function () {
+                    if(typeof callback === "function"){
+                        callback();
+                    }
+                }
+            })
+        }
+
+        var getChinese = function(txt){
+			if(txt.length >= 110){
+			    txt = txt.substring(0,110) + '…';
+			}
+			return txt;
+		}
+
+        //获取符合条件的图片信息
+        var getSearchResult = function (info, callback) {
+            $.ajax({
+                type: 'get',
+                url: 'getSearchInPicInfo',
+                data: info,
+                success: function (result) {
+                    if(typeof result.pics == "undefined" ||
+						result.pics.length == 0){
+                        if(typeof callback == "function"){
+                            callback();
+						}
+					}else {
+                        data.pics = result.pics;
+                        data.info.curPage = result.curPage;
+                        data.info.pageSize = result.pageSize;
+                    }
+                },
+                complete: function () {
+                },
+				error:function () {
+                    getNextNotes(data.pageCount,3,function(result) {
+                        data.ns = result;
+                    });
+                }
+            });
+        }
+
+        $(function() {
+			$("#toTop").scrollToTop(800);
+			getNoteContent(data.index=data.index,function () {
+				qiao.end(function () {
+					if(data.index < data.pageCount && data.index < 20 )
+						getNoteContent(data.index+1);
+				});
+			});
+            getNextNotes(1,6);
+            getSearchResult(data.info,function () {
+                getNextNotes(data.pageCount,3,function(result) {
+					data.ns = result;
+                });
+            });
+        });
+	</script>
+</html>

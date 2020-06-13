@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2017-3-23 16:11:55 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com._5fu8.admin.table.Notes" table="article">
+        <id name="id" type="java.lang.Integer">
+            <column name="id"/>
+            <generator class="native" />
+        </id>
+        <property name="title" type="java.lang.String">
+            <column name="title" length="60" not-null="true"/>
+        </property>
+        <many-to-one name="childType" class="com._5fu8.admin.table.ChildType" fetch="join">
+            <column name="child_type_id" not-null="true" />
+        </many-to-one>
+        <many-to-one name="user" class="com._5fu8.admin.table.User" fetch="join">
+            <column name="user_id" not-null="true"/>
+        </many-to-one>
+        <property name="description" type="text">
+            <column name="description" length = "16777216"/>
+        </property>
+        <property name="check" type="java.lang.Integer">
+            <column name="article_check" default="0"/>
+        </property>
+        <property name="status" type="java.lang.Integer">
+            <column name="status" default="0"/>
+        </property>
+        <property name="share" type="java.lang.Integer">
+            <column name="share" default="0"/>
+        </property>
+        <property name="firstTime" type="timestamp">
+            <column name="create_time"/>
+        </property>
+        <property name="aid" type="com._5fu8.admin.config.ListStringType">
+            <column name="aid" />
+        </property>
+    </class>
+</hibernate-mapping>

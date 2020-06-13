@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>用户注册-微雅视频</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" type="text/css" href="../css/bootstrap.min.css" />
+  <link rel="stylesheet" type="text/css" href="../css/font-awesome.min.css" />
+  <style>
+    body{
+      font-family: 'microsoft yahei',Arial,sans-serif;
+      background-color: #222;
+    }
+
+    .redborder {
+      border:2px solid #f96145;
+      border-radius:2px;
+    }
+
+    .row {
+      padding: 20px 0px;
+    }
+
+    .bigicon {
+      font-size: 97px;
+      color: #f08000;
+    }
+
+    .loginpanel {
+      text-align: center;
+      width: 300px;
+      border-radius: 0.5rem;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: 10px auto;
+      background-color: #555;
+      padding: 20px;
+    }
+
+    input {
+      width: 100%;
+      margin-bottom: 17px;
+      padding: 15px;
+      background-color: #ECF4F4;
+      border-radius: 2px;
+      border: none;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      font-weight: normal;
+      color: #EFEFEF;
+    }
+
+    .btn {
+      border-radius: 2px;
+      padding: 10px;
+    }
+
+    .btn span {
+      font-size: 27px;
+      color: white;
+    }
+
+    .buttonwrapper{
+      position:relative;
+      overflow:hidden;
+      height:50px;
+    }
+
+    .lockbutton {
+      font-size: 27px;
+      color: #f96145;
+      padding: 10px;
+      width:100%;
+      position:absolute;
+      top:0;
+      left:0;
+    }
+
+    .loginbutton {
+      background-color: #f08000;
+      width: 100%;
+      -webkit-border-top-right-radius: 0;
+      -webkit-border-bottom-right-radius: 0;
+      -moz-border-radius-topright: 0;
+      -moz-border-radius-bottomright: 0;
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+      left: -260px;
+      position:absolute;
+      top:0;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Interactive Login - START -->
+<div class="container-fluid">
+  <div class="row">
+    <div class="loginpanel">
+      <i id="loading" class="hidden fa fa-spinner fa-spin bigicon"></i>
+      <h2>
+        <span class="fa fa-quote-left "></span> 用户注册 <span class="fa fa-quote-right "></span>
+      </h2>
+      <div>
+        <input id="username" name="username" type="text" placeholder="登录账号" onkeyup="check_values();">
+        <input id="nickname" type="text" placeholder="用户昵称" onkeypress="check_values();">
+        <input id="password" type="password" placeholder="输入密码" onkeypress="check_values();">
+        <input id="re_pass" type="password" placeholder="请再次输入密码" onkeypress="check_values();">
+
+        <div class="buttonwrapper">
+          <button id="loginbtn" class="btn btn-warning loginbutton">
+            <span class="fa fa-check"></span>
+          </button>
+          <span id="lockbtn" class="fa fa-lock lockbutton redborder"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<div class="container-fluid">
+  <div class="row footerbox">
+    <div class="col-md-1"></div>
+    <div class="col-md-10">
+      <footer class="text-center">
+        <a href="login.html">
+          <i class="fa fa-external-link"></i> 用户登录界面</a>
+      </footer>
+    </div>
+    <div class="col-md-1"></div>
+  </div>
+</div>
+</body>
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<script type="text/javascript" src="../js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../js/qiao.js"></script>
+<script type="text/javascript" src="../js/md5.js"></script>
+<script type="text/javascript" src="../js/verify.js"></script>
+<script type="text/javascript">
+    $(function () {
+        is_login();
+        $("input[name=username]").val('').focus();
+    });
+
+    var is_login = function () {
+        $.ajax({
+            type:'post',
+            url:'../isLogin',
+            success:function (result) {
+                if(result){
+                    qiao.bs.confirm({
+                        title:'您已经登录',
+                        msg:'是否前往后台管理界面',
+                        okbtn:'后台',
+                        qubtn:'首页',
+                        close:false,
+                        keyboard:false
+                    },function () {
+                        window.location.href = '../manager/index.html';
+                    },function () {
+                        window.location.href = '../index.html';
+                    })
+                }else {
+                    return true;
+                }
+            }
+        })
+    };
+
+    function check_values() {
+        if ($("#username").val().length != 0  && $("#nickname").val().length != 0
+            && $("#password").val().length != 0 && $("#re_pass").val().length != 0) {
+            $("#loginbtn").animate({ left: '0' , duration: 'slow'});
+            $("#lockbtn").animate({ left: '260px' , duration: 'slow'});
+            return true;
+        }
+        return false;
+    }
+
+    $("#loginbtn").click(function(){
+        $('#loading').removeClass('hidden');
+        //这里书写登录相关后台处理，例如: Ajax请求用户名和密码验证
+        if(!verify($("#username").val(),'username')){
+            $('#loading').removeClass();
+            qiao.bs.alert('登录账号不合法，必须是数字、字母、下划线之类……');
+            return;
+        }else if(!verify($("#nickname").val(),'nickname')){
+            $('#loading').removeClass();
+            qiao.bs.alert('用户昵称不合法，必须是中文、数字、字母、下划线之类……');
+            return;
+        }else if($('#password').val() != $("#re_pass").val()){
+            $('#loading').removeClass();
+            qiao.bs.alert('两次输入的密码不相同，请重新输入!');
+            return;
+        }
+        var info = {
+            userName:$.trim($("#username").val()) || '',
+            nickName:$.trim($("#nickname").val()) || '',
+            pwd:$.trim($("#password").val()) || '',
+        }
+        if(!verifyStrLength(info.userName,5,12)){
+            $('#loading').removeClass();
+            qiao.bs.alert('登录账号长度应在5-12位之内');
+            return;
+        }else if(!verifyStrLength(info.nickName,3,12)){
+            $('#loading').removeClass();
+            qiao.bs.alert('用户昵称长度应在3-12位之内');
+            return;
+        }else if(!verifyStrLength(info.pwd,5,12)){
+            $('#loading').removeClass();
+            qiao.bs.alert('登录密码长度应在5-12位之内');
+            return;
+        }else{
+            $("#loading").attr("class","fa fa-spinner fa-spin bigicon");
+            info.pwd = hex_md5(info.pwd);
+            register(info);
+        }
+    });
+
+    var register = function (info) {
+      $.ajax({
+         type:'post',
+          url:'ToRegister',
+          data:info,
+          success:function (result) {
+             if(result){
+                  qiao.bs.confirm({
+                      title:'注册成功',
+                      msg:'是否返回登录页面？',
+                      okbtn:'登录',
+                      qubtn:'首页'
+                  },function () {
+                      window.location.href = './login.html';
+                  },function () {
+                      window.location.href = '../index.html';
+                  })
+             }else {
+                 $('#loading').removeClass();
+                 qiao.bs.alert('该用户名已经被使用……')
+             }
+          }
+      });
+    }
+</script>
+<!-- Interactive Login - END -->
+</html>

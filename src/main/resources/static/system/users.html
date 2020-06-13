@@ -1,0 +1,189 @@
+<!--普通用户列表-->
+<div class="col-sm-12" id="app" style="margin-bottom: -20px;">
+	<div class="box box-primary">
+		<div class="box-header with-border ui-sortable-handle">
+			<div class="pull-left btn-group">
+				<label @click="addMaster()" class="btn btn-primary fa  fa-plus">添加管理员</label>
+			</div>
+			<div class="box-tools">
+			<form class="form-inline" onsubmit="return false;">
+				<div class="form-group input-group pull-right">
+					<input @keyup.Enter="submit"  type="text" name="word" class="form-control" placeholder="账号搜索...">
+					<div class="input-group-btn">
+						<button class="btn btn-primary" onclick="toSearch()">
+							<i class="fa fa-search"></i>
+						</button>
+					</div>
+				</div>
+			</form>
+			</div>
+			<script>
+				var toSearch = function () {
+				    var wd = $.trim($("input[name=word]").val());
+				    if(isEmpty(wd)){
+				        delete data.info.wd;
+					}else{
+                        data.info.wd = wd;
+                    }
+					data.curPage = 1;
+					getUsers(data.info,function () {
+						resetPage();
+                    });
+                }
+                var getUsers = function (info,callback) {
+					var info = info ||{curPage:1,pageSize:6};
+					$.ajax({
+					    type:'post',
+						url:'./searchUser',
+						data:info,
+						success:function (result) {
+                            data.users = result.users;
+                            data.pageSize = result.pageSize;
+                            data.curPage = result.curPage;
+                            data.pageCount = result.pageCount;
+                            data.count = result.count;
+                        },
+                        complete:function () {
+                            if (typeof callback === "function") {
+                                callback();
+                            }
+                        }
+					});
+                }
+			</script>
+			<!-- /.box-tools -->
+		</div>
+		<!-- /.box-header -->
+		<div class="box-body no-padding">
+			<table class="table table-hover">
+				<tbody>
+				<tr>
+					<th>用户账号</th>
+					<th>用户昵称</th>
+					<th>注册日期</th>
+					<th>管理工具</th>
+				</tr>
+				<tr v-for="(user,index) in users" v-if="user[0] != -1">
+					<td>{{user[1]}}</td>
+					<td>{{user[2]}}</td>
+					<td>{{moment(user[3]).format('YYYY-MM-DD HH:mm:ss')}}</td>
+					<td>
+						<button @click="showUser(user)" class="btn btn-default btn-xs fa fa-comment-o">详细</button>
+						<button @click="editUser(user)" class="btn btn-default btn-xs fa fa-edit">修改</button>
+						<button @click="delUser(user[0],index)" class="btn btn-default btn-xs fa fa-trash">删除</button>
+					</td>
+				</tr>
+				</tbody>
+			</table>
+			<!--</div>-->
+			<div style="text-align:center;" id="pagination">
+				<ul id="pagination-demo" class="pagination-sm"></ul>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+    var resetPage = function () {
+		if(data.pageCount>1)
+		    resetPageNum({
+		        el:'#pagination',
+				pageCount:data.pageCount,
+				callback:function (page) {
+                    if(page === data.curPage) return;
+                    data.info.curPage = page;
+                    getUsers(data.info);
+                }
+			});
+    }
+    var data = {
+        pageSize:5,
+        pageCount:1,
+        curPage:1,
+        count:0,
+        users:[],
+		info:{curPage:1,pageSize:6},
+		tmpUser:1
+    }
+
+    var vue = new Vue({
+        el: '#app',
+        data: data,
+        methods:{
+            del:function (index) {
+                data.users.splice(index, 1);
+            },
+            check:function (index,status) {
+                vue.$set(data.users[index],4,status);
+            },
+			submit:function () {
+				toSearch();
+            }
+        }
+    });
+    vue.showUser = function (user) {
+        vue.tmpUser = user;
+        qiao.bs.dialog({
+            id : 'showUser',
+            url :'./showUser.htm',
+            head:false,
+            foot:false,
+            backdrop: true,
+            big : true
+        },function () {
+            return true;
+        });
+    }
+
+    vue.editUser = function (user) {
+        vue.tmpUser = user;
+        qiao.bs.dialog({
+            id : 'editUser',
+            url :'./editUser.htm',
+            head:false,
+            foot:false,
+            backdrop: true,
+            big : true
+        },function () {
+            return true;
+        });
+    }
+
+    vue.addMaster = function (user) {
+        vue.tmpUser = user;
+        qiao.bs.dialog({
+            id : 'addMaster',
+            url :'./addMaster.htm',
+            head:false,
+            foot:false,
+            backdrop: true,
+            big : true
+        },function () {
+            return true;
+        });
+    }
+
+    vue.delUser = function (uid,index) {
+		if(isEmpty(uid)){
+		    qiao.alert('参数错误，删除失败');
+		    return;
+		}else
+		    $.ajax({
+		        type:'post',
+				url:'./delSimpleUser',
+				data:{uid:uid},
+				success:function (result) {
+					if(!result){
+                        qiao.alert('参数错误，删除失败');
+					}else {
+					   vue.$set(data.users[index],0,-1);
+					}
+                }
+			});
+    }
+
+
+    $(function () {
+        toSearch(data.info);
+    });
+
+</script>

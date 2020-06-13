@@ -1,0 +1,110 @@
+@charset "utf-8";
+/* CSS Document */
+*{margin: 0;padding: 0;list-style:none;border:none;}
+body {
+    font-family: "microsoft yahei" !important;
+    background-color: #E8E8FF;
+}
+/******************************
+A jQuery plugin for search hints
+
+Author: Lorenzo Cioni
+https://github.com/lorecioni
+********************************/
+
+.autocomplete-container {
+    position: relative;
+    width: 283px;
+    height: 32px;
+    margin: 0 auto;
+    z-index:2;
+}
+
+.autocomplete-input {
+    padding: 9px;
+    border-radius: 3px !important;
+    font-family: inherit;
+    float: left;
+    font-size: 1em;
+    border: 1px solid rgba(0, 0, 0, 0.19);
+    margin: 0;
+}
+
+.autocomplete-button {
+    font-family: inherit;
+    border: none;
+    background-color: #990101;
+    color: white;
+    padding: 8px;
+    float: left;
+    cursor: pointer;
+    border-radius: 0px 3px 3px 0px;
+    transition: all 0.2s ease-out 0s;
+    margin: 0.5px 0px 0px -1px;
+}
+
+.autocomplete-select{
+    font-family: "microsoft yahei" !important;
+    padding: 9px;
+    float: left;
+    font-size: 1em;
+    margin: 0;
+}
+
+.autocomplete-button:HOVER {
+    background-color: #D11E1E;
+}
+
+.proposal-box {
+    position: absolute;
+    height: auto;
+    border-left: 1px solid rgba(0, 0, 0, 0.11);
+    border-right: 1px solid rgba(0, 0, 0, 0.11);
+    left: 0px;
+}
+
+.proposal-list {
+    list-style: none;
+    box-shadow: 1px 1px 5px rgba(0, 0, 0, 0.44);
+    -webkit-margin-before: 0em;
+    -webkit-margin-after: 0em;
+    -webkit-margin-start: 0px;
+    -webkit-margin-end: 0px;
+    -webkit-padding-start: 0px;
+}
+
+.proposal-list li {
+    text-align: left;
+    padding: 5px;
+    font-family: inherit;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.16);
+    height: 25px;
+    line-height: 25px;
+    background-color: rgba(255, 255, 255, 1.0);
+    cursor: pointer;
+}
+
+li.proposal.selected {
+    background-color: rgba(175, 42, 0, 1.0);
+    color: white;
+}
+
+a {outline-style:none;color:#000;text-decoration:none}
+
+.itagBox a img {border:0}
+.itagBox { color: #333; text-align: center; font: 12px "microsoft yahei";z-index:1}
+ul, ol, li {list-style-type:none;vertical-align:0}
+.itagBox a {outline-style:none;color:#535353;text-decoration:none}
+.itagBox a:hover { color: #D40000; text-decoration: none}
+.itagBox { margin: 10px auto 0px; clear: both; width: 650px; overflow: hidden; }
+.itagBox ul { width: 700px; }
+.itagBox ul li { position: relative; float: left; width: 110px;
+    background: #5C9FE1; height: 80px; color: #FFF;
+    font-weight: bold; overflow: hidden; margin: 0px 3px 3px 0px; }
+.itagBox ul .tag1 { width: 206px; }
+.tag_yellow { color: #fff601; }
+.tag_txt { text-align: center; line-height: 20px; padding-top: 22px; }
+.itagBox ul li a { overflow: hidden; position: absolute; left: 0px; top: 0px; line-height: 20px; text-align: center; padding-top: 5px; display: block; color: #FFF; width: 100%; height: 75px; /*filter: alpha(opacity=90); background: #000; opacity: 0.8;*/ background:rgba(0, 0, 0, 0.8) }
+.itagBox ul li a:hover { color: #FFF; text-decoration: none; }
+.itagBox ul .tag2 { background: #2E71B3; }
+.itagBox ul .tag3 { background: url(../images/itagBg.jpg) no-repeat center center; }

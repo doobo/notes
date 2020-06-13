@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2017-3-23 16:11:55 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com._5fu8.admin.table.MainType" table="main_type">
+        <id name="id" type="java.lang.Integer">
+            <column name="id" />
+            <generator class="native" />
+        </id>
+        <property name="typename" type="java.lang.String">
+            <column name="type_name"  unique="true" length="40" not-null="true"/>
+        </property>
+        <property name="description" type="java.lang.String">
+            <column name="description" />
+        </property>
+        <many-to-one name="user" class="com._5fu8.admin.table.User" fetch="join">
+            <column name="user_id" not-null="true"/>
+        </many-to-one>
+        <property name="firstTime" type="timestamp">
+            <column name="create_time" />
+        </property>
+    </class>
+</hibernate-mapping>

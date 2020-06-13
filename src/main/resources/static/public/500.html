@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:v-bind="http://www.w3.org/1999/xhtml">
+	<head>
+		<base href="/notes/public/">
+		<meta charset="utf-8" lang="zh_CN">
+		<title>500页面</title>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<!-- 引入 Bootstrap -->
+		<link rel="stylesheet" href="../css/bootstrap.min.css" />
+		<link rel="stylesheet" href="../css/style.css" />
+		<!-- HTML5 Shim 和 Respond.js 用于让 IE8 支持 HTML5元素和媒体查询 -->
+		<!-- 注意： 如果通过 file://  引入 Respond.js 文件，则该文件无法起效果 -->
+		<!--[if lt IE 9]>
+		<script type="text/javascript" src="../js/html5shiv.js" ></script>
+		<script type="text/javascript" src="../js/respond.min.js" ></script>
+      	<![endif]-->
+		<!--AadminLTE基本资源-->
+		<link rel="stylesheet" href="../css/font-awesome.min.css" />
+		<link rel="stylesheet" href="../js/AdminLTE/dist/css/AdminLTE.min.css" />
+	</head>
+	<body>
+	<div class="container" id="app">
+	<div class="row" style="margin-top: 80px;">
+		<section class="content">
+			<div class="error-page">
+				<h2 class="headline text-red">500</h2>
+				<div class="error-content">
+					<h3><i class="fa fa-warning text-red"></i> Sorry! 发生了一些错误.</h3>
+
+					<p>
+						服务器发生未知错误,我们将马上修复.
+						与此同时,你可以<a href="../index.html">返回首页</a> 或者尝试使用站内搜索
+					</p>
+					<form class="search-form" action="index.html">
+						<div class="input-group">
+							<input type="text" name="wd" class="form-control" placeholder="站内搜索">
+
+							<div class="input-group-btn">
+								<button type="submit" class="btn btn-danger btn-flat"><i class="fa fa-search"></i>
+								</button>
+							</div>
+						</div>
+						<!-- /.input-group -->
+					</form>
+				</div>
+			</div>
+			<!-- /.error-page -->
+		</section>
+	</div>
+
+</div><!--主内容区域结束-->
+</body>
+</html>

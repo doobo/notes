@@ -1,0 +1,117 @@
+<!--用户列表-->
+<div class="col-sm-12" id="app" style="margin-bottom: -20px;">
+	<div class="box box-primary">
+		<div class="box-header with-border ui-sortable-handle">
+			<form class="form-inline" onsubmit="return false;">
+				<div class="form-group">
+					<select class="form-control">
+						<option>管理员账号</option>
+						<option>管理员昵称</option>
+					</select>
+				</div>
+				<div class="form-group">
+					<input  type="text" class="form-control" placeholder="请输入搜索内容...">
+				</div>
+				<div class="form-group">
+					<button class="btn btn-primary search-btn">
+						<i class="glyphicon glyphicon-search"></i>查询
+					</button>
+				</div>
+			</form>
+			<!-- /.box-tools -->
+		</div>
+		<!-- /.box-header -->
+		<div class="box">
+			<table class="table table-hover">
+				<thead>
+				<tr>
+					<th>管理员账号</th>
+					<th>管理员昵称</th>
+					<th>注册日期</th>
+					<th>管理工具</th>
+				</tr>
+				</thead>
+				<tbody>
+				<tr v-for="(user,index) in kingMaster">
+					<td>{{user[1]}}</td>
+					<td>{{user[2]}}</td>
+					<td>{{moment(user[3]).format('YYYY-MM-DD HH:mm:ss')}}</td>
+					<td>
+						<button class="btn btn-default btn-xs fa fa-edit">修改密码</button>
+						<button class="btn btn-default btn-xs fa fa-comment-o">详细信息</button>
+						<button class="btn btn-default btn-xs fa fa-trash">删除用户</button>
+					</td>
+				</tr>
+				</tbody>
+			</table>
+			<!--</div>-->
+			<div style="text-align:center;">
+				<ul id="pagination-demo" class="pagination-sm"></ul>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+    //获取指定页面的参数
+    var nextPage = function(nextPage,pageSize,callback){
+        $.ajax({
+            type:"post",
+            url:'getSimpleKingMaster',
+            data:{
+                curPage:nextPage,
+                pageSize:pageSize
+            },
+            success:function (result) {
+                data.kingMaster = result.kingMaster;
+                data.pageSize = result.pageSize;
+                data.curPage = result.curPage;
+                data.pageCount = result.pageCount;
+                data.count = result.count;
+            },
+            complete:function () {
+                if(typeof callback === "function"){
+                    callback();
+                }
+            }
+        });
+    }
+
+    $(function () {
+        nextPage(1,6,function () {
+            qiao.bs.bsdate('.qdate');
+            $('#pagination-demo').twbsPagination({
+                totalPages: data.pageCount,
+                visiblePages: 7,
+                first:'首页',
+                last:'末页',
+                prev:'上一页',
+                next:'下一页',
+                onPageClick: function (event, page) {
+                    if(page === data.curPage) return;
+                    nextPage(page,data.pageSize,undefined);
+                }
+            });
+        });
+    });
+
+    var data = {
+        pageSize:5,
+        pageCount:1,
+        curPage:1,
+        count:0,
+        kingMaster:[]
+    }
+
+    var vue = new Vue({
+        el: '#app',
+        data: data,
+        methods:{
+            del:function (index) {
+                data.users.splice(index, 1);
+            },
+            check:function (index,status) {
+                vue.$set(data.users[index],4,status);
+            }
+        }
+    });
+</script>

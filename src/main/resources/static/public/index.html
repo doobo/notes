@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html xmlns:v-bind="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta charset="utf-8" lang="zh_CN">
+		<title>微雅视频-搜索页面</title>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<!-- 引入 Bootstrap -->
+		<link rel="stylesheet" href="../css/bootstrap.min.css" />
+		<link rel="stylesheet" href="../css/style.css" />
+		<!-- HTML5 Shim 和 Respond.js 用于让 IE8 支持 HTML5元素和媒体查询 -->
+		<!-- 注意： 如果通过 file://  引入 Respond.js 文件，则该文件无法起效果 -->
+		<!--[if lt IE 9]>
+		<script type="text/javascript" src="../js/html5shiv.js" ></script>
+		<script type="text/javascript" src="../js/respond.min.js" ></script>
+      	<![endif]-->
+		<!--AadminLTE基本资源-->
+		<link rel="stylesheet" href="../css/font-awesome.min.css" />
+	</head>
+	<body>
+	<div class="container" id="app">
+	<div class="row clearfix">
+			<a href="#top" id="toTop"></a>
+			<nav class="navbar navbar-inverse" role="navigation">
+			    <div class="navbar-header">
+			        <a class="navbar-brand" href="../index.html">微雅视频</a>
+			    </div>
+				<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+					<ul class="nav navbar-nav">
+						<li>
+							 <a href="../index.html">首页</a>
+						</li>
+						<li>
+							 <a href="../static/index.html">新建笔记</a>
+						</li>
+						<li>
+							 <a href="allType.html">全部分类</a>
+						</li>
+						<li>
+							 <a href="search.html">高级搜索</a>
+						</li>
+					</ul>
+					<form class="navbar-form navbar-left" method="get"
+						  role="search" action="./index.html">
+						<div class="form-group">
+							<input type="text" name="wd" class="form-control" placeholder="搜索笔记..." />
+						</div> <button type="submit" class="btn btn-default">搜索</button>
+					</form>
+					<ul class="nav navbar-nav navbar-right">
+						<li>
+							<a href="javascript:nav_show();">网站导航</a>
+						</li>
+					</ul>
+				</div>
+			</nav>
+	</div><!--The Header End-->
+		<script>
+            var nav_show = function () {
+                qiao.bs.dialog({
+                    id : 'nav_index',
+                    url :'nav.htm',
+                    head:false,
+                    foot:false,
+                    backdrop: true,
+                    big : true
+                },function () {
+                    return true;
+                });
+            }
+		</script>
+
+	<div class="row clearfix" style="margin-top:-10px;">
+		<div class="row" style="word-break:break-all;">
+		<div class="col-md-4" v-for="(note,index) in notes">
+			<!-- USERS LIST -->
+			<div v-bind:class="['box' ,index%2==0?'box-primary':'box-warning']">
+				<div class="box-header with-border">
+					<h3 class="box-title">
+						<span v-html="getHSearch(note[1])"></span>
+					</h3>
+					<div class="box-tools pull-right">
+						<button type="button" class="btn btn-box-tool"
+								data-widget="collapse"><i class="fa fa-minus"></i>
+						</button>
+						<button type="button" class="btn btn-box-tool"
+								data-widget="remove"><i class="fa fa-times"></i>
+						</button>
+					</div>
+				</div>
+				<!-- /.box-header -->
+				<div class="box-body no-padding" style="display: block;height:150px;">
+					<p v-html="getChinese(note[3])"></p>
+					<span>创建时间:&nbsp;{{moment(Number(note[2]))
+						.format('YYYY-MM-DD HH:mm:ss')}}
+					</span>
+				</div>
+				<!-- /.box-body -->
+				<div class="box-footer text-center" style="display: block;">
+					<a target="_blank" v-bind:href="'next.html?id='+note[0]">查看详细</a>
+				</div>
+				<!-- /.box-footer -->
+			</div>
+			<!--/.box -->
+		</div>
+	</div>
+	</div>
+
+	<div class="row">
+		<div class="col-md-12 text-center">
+			<ul id="pagination-demo" class="pagination-sm"></ul>
+		</div>
+	</div>
+
+
+	<div class="row">
+		<div class="col-md-12 text-center footer">
+		 <span class="common">
+		 	Copyright &copy;2020 微雅视频
+		 	<a class="common" href="http://www.hncu.net" target="_blank">hncu.net</a>
+		 	All Rights Reserved.
+		 </span>
+		</div>
+	</div>
+</div><!--主内容区域结束-->
+</body>
+	<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+	<script type="text/javascript" src="../js/jquery.min.js"></script>
+	<!-- 包括所有已编译的插件 -->
+	<script type="text/javascript" src="../js/bootstrap.min.js"></script>
+	<script src="../js/jquery.scrollToTop.min.js"></script>
+	<script src="../js/qiao.js"></script>
+	<script src="../js/moment.min.js"></script>
+	<script src="../js/verify.js"></script>
+	<script src="../js/vuejs/vue.min.js"></script>
+	<script type="text/javascript" src="../js/jquery.twbsPagination.min.js"></script>
+	<script type="text/javascript">
+        $(function() {
+            if(qiao.search('wd')== null || qiao.search('wd').length == 0){
+                window.location.href="search.html";
+			}else {
+                getIKText(decodeURI(qiao.search('wd')).replace('+',' ') || '');
+                getSearchResult(1,null,function () {
+                    $("#toTop").scrollToTop(800);
+                    getPageNo();
+                });
+			}
+        });
+
+        var getPageNo = function () {
+            if(data.pageCount > 1)
+            $('#pagination-demo').twbsPagination({
+                totalPages: data.pageCount,
+                visiblePages: 7,
+                first:'首页',
+                last:'末页',
+                prev:'上一页',
+                next:'下一页',
+                link_to:'&id=_id_',
+                onPageClick: function (event, page) {
+                    if(page === data.curPage) return;
+                    getSearchResult(page);
+                }
+            });
+        }
+
+
+        var getSearchResult = function (curPage,wd,callback) {
+            var tmp = {
+				curPage:curPage,
+				pageSize:6,
+				wd:wd || qiao.search('wd'),
+				type:qiao.search('type')
+			};
+            tmp.wd = tmp.wd.replace(/\+/g, ' ');//还原+为空格
+            tmp.wd = $.trim(tmp.wd);
+            tmp.wd = tmp.wd.replace(/\s+/g, ' ');//多个空格改为一个空格
+
+            tmp.wd = decodeURIComponent(tmp.wd);
+            tmp.wd = tmp.wd.replace(/\s+/g, ' ');//多个空格改为一个空格
+            tmp.wd = $.trim(tmp.wd);
+            if(!verifyStringLength(tmp.wd,1,32)){
+                tmp.wd = tmp.wd.substring(0,16);
+            }
+            if(typeof tmp.type == "undefined"){
+                delete tmp.type;
+            }
+            $.ajax({
+			    type:'post',
+				url:'getSearchResult',
+				data:tmp,
+				success:function (result) {
+			        if(typeof result.notes == "undefined"){
+						qiao.bs.alert('没有搜索到对应的内容哦！');
+					}else {
+                        data.notes = result.notes;
+                        data.curPage = result.curPage;
+                        data.pageSize = result.pageSize;
+                        data.pageCount = result.pageCount;
+                        data.count = result.count;
+					}
+                },
+				complete:function () {
+					if(typeof callback === "function"){
+					    callback();
+					}
+                }
+			});
+        };
+
+
+        var data = {
+            curPage:0,
+			pageCount:1,
+			pageSize:7,
+			count:1,
+            notes:[],
+			text:[]
+        }
+
+        var app = new Vue({
+            el:"#app",
+            data:data
+        });
+
+
+        var getIKText = function (text,callback) {
+			$.ajax({
+			    type:'post',
+				url:'getIKText',
+				data:{text:text},
+				success:function (result) {
+					data.text = result;
+                },
+				complete:function () {
+					if(typeof callback === "function"){
+					    callback();
+					}
+                }
+			})
+        }
+
+        //去除字符串里面的html标签
+        var getChinese =  function (str) {
+            if(str.length > 100) {
+               str =  str.substring(0, 100) + '…';
+            }
+            var reg;
+			$.each(data.text,function () {
+			    var pattern = this.toString();
+			    pattern = replaceSpecialChar(pattern)
+                eval("reg = /" + pattern + "/ig;");
+				str = str.replace(reg,
+					"<span style='color:red;font-size: large'>"+this.toString()+"</span>")
+            });
+            return str;
+        }
+
+        var getHSearch = function (str) {
+            if(str.length >= 10){
+                str = str.substring(0,10)+'...';
+			}
+			var reg;
+            $.each(data.text,function () {
+                var pattern = this.toString();
+                pattern = replaceSpecialChar(pattern);
+                eval("reg = /" + pattern+ "/ig;");
+                str = str.replace(reg,
+                    "<Strong style='color:red;'>"+this.toString()+"</Strong>")
+            });
+            return str;
+        }
+	</script>
+</html>

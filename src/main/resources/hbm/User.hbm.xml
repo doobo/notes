@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- Generated 2017-3-23 16:11:55 by Hibernate Tools 3.4.0.CR1 -->
+<hibernate-mapping>
+    <class name="com._5fu8.admin.table.User" table="user">
+        <id name="id" type="java.lang.Integer">
+            <column name="id" />
+            <generator class="native" />
+        </id>
+        <property name="username" type="java.lang.String">
+            <column name="username"  unique="true" length="20"/>
+        </property>
+        <property name="nickname" type="java.lang.String">
+            <column name="nickname" length="20" />
+        </property>
+        <property name="password" type="java.lang.String">
+            <column name="password"  not-null="true"/>
+        </property>
+        <property name="type" type="java.lang.Integer">
+            <column name="user_type" default="0"/>
+        </property>
+        <property name="status" type="java.lang.Integer">
+            <column name="status" default="0"/>
+        </property>
+        <property name="signTime" type="timestamp">
+            <column name="sign_time" />
+        </property>
+    </class>
+</hibernate-mapping>

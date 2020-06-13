@@ -1,0 +1,198 @@
+<!--用户个人中心-->
+<style>
+	.help-block{
+		color:red;
+	}
+</style>
+<div id="app" xmlns:v-bind="http://www.w3.org/1999/xhtml">
+	<div class="col-md-3">
+		<!-- Profile Image -->
+		<div class="box box-primary">
+			<div class="box-body box-profile user_pic">
+				<img class="profile-user-img img-responsive
+			img-circle" v-bind:src="data2.img"
+					 alt="用户头像">
+
+				<h3 class="profile-username text-center" v-text="data2.user.nickname"></h3>
+
+				<p class="text-muted text-center">普通用户</p>
+
+				<ul class="list-group list-group-unbordered">
+					<li class="list-group-item">
+						<b>登录账号</b> <a class="pull-right" v-text="data2.user.username"></a>
+					</li>
+					<li class="list-group-item">
+						<b>用户昵称</b> <a class="pull-right" v-text="data2.user.nickname">543</a>
+					</li>
+					<li class="list-group-item">
+						<b>注册日期</b> <a class="pull-right" v-text="moment(data2.user.signTime).format('YYYY-MM-DD')">13,287</a>
+					</li>
+				</ul>
+				<a href="javascript:toHeadImg();"
+				   class="btn btn-primary btn-block"><b>头像管理</b></a>
+			</div>
+			<!-- /.box-body -->
+			<script>
+                var toHeadImg = function () {
+                    vue2.setMenu('头像管理','个人中心');
+                    getPageByUrl('head.html');
+                }
+			</script>
+		</div>
+		<!-- /.box -->
+	</div>
+	<div class="col-sm-4">
+		<div class="box box-primary">
+			<div class="box-header with-border">
+				<h3 class="box-title">修改登录密码</h3>
+			</div>
+			<script>
+                var pw_1 = function (obj) {
+                    if (!verifyStrLength($(obj).val(), 5,12)) {
+                        data.pw_1 = '密码长度5-12';
+                    } else {
+                        data.pw_1 = '';
+                    }
+                }
+
+                var pw_2 = function (obj) {
+                    if ($(obj).val() != $('input[name=password]').val()) {
+                        data.pw_2 = '两次密码不相同';
+                    } else {
+                        data.pw_2 = '';
+                    }
+                }
+
+                var updatePassword = function () {
+                    if(data.pw_1.length == 0 && data.pw_2.length == 0){
+                        if(isEmpty($($("input[type=password]")[0]).val())
+                            || isEmpty($($("input[type=password]")[1]).val())){
+                            qiao.bs.alert('密码不能为空');
+                            return;
+                        }else
+                        $.ajax({
+                            type:'post',
+                            url:'updateMasterPwd',
+                            data:{pwd:hex_md5($.trim($('input[name=password]').val()))},
+                            success:function (result) {
+                                if(result){
+                                    $('input[type=password]').val('');
+                                    qiao.bs.alert('密码更新成功');
+                                }else{
+                                    qiao.bs.alert('参数不匹配……');
+                                }
+                            }
+                        });
+                    }else{
+                        qiao.bs.alert('密码不符合要求……');
+                    }
+                }
+			</script>
+			<form role="form" onsubmit="return false;">
+				<!-- /.box-header -->
+				<div class="box-body">
+					<div class="form-group" onsubmit="return false;">
+						<label>登录密码</label>
+						<input onkeyup="pw_1(this)" name="password" type="password" class="form-control" placeholder="登录密码 ...">
+						<span class="help-block" v-text="pw_1"></span>
+					</div>
+
+					<div class="form-group">
+						<label>再次输入</label>
+						<input onkeyup="pw_2(this)" type="password" class="form-control" placeholder="再次输入 ...">
+						<span class="help-block" v-text="pw_2"></span>
+					</div>
+				</div>
+				<!-- /.box-body -->
+				<div class="box-footer text-center">
+					<button type="reset" class="btn btn-info">重置</button>
+					<button type="button" onclick="updatePassword()" class="btn btn-info">修改</button>
+				</div>
+			</form>
+		</div>
+		<!-- /.box -->
+	</div>
+
+	<div class="col-sm-4">
+		<div class="box box-primary">
+			<div class="box-header with-border">
+				<h3 class="box-title">修改用户昵称</h3>
+			</div>
+			<form role="form" onsubmit="return false;">
+				<!-- /.box-header -->
+				<div class="box-body">
+					<div class="form-group">
+						<label>用户昵称</label>
+						<input type="text" name="nickname" class="form-control" onkeyup="nk_1(this)" placeholder="用户昵称 ...">
+						<span class="help-block" v-text="nk_1"></span>
+					</div>
+				</div>
+				<!-- /.box-body -->
+				<div class="box-footer text-center">
+					<button type="reset" class="btn btn-info">重置</button>
+					<button type="button" @click="vue.updateNickName()" class="btn btn-info">修改</button>
+				</div>
+			</form>
+		</div>
+		<script>
+            var nk_1 = function (obj) {
+                if(!verify($(obj).val(),'nickname')){
+                    data.nk_1 = '只能包含字母、数字、下划线、中文';
+                }else{
+                    data.nk_1 = '';
+                }
+            }
+		</script>
+		<!-- /.box -->
+	</div>
+</div>
+<script>
+    var data = {
+        pageSize:5,
+        pageCount:1,
+        curPage:1,
+        count:0,
+        users:[],
+        pw_1:'',
+        pw_2:'',
+        nk_1:''
+    }
+
+    var vue = new Vue({
+        el: '#app',
+        data: data,
+        methods:{
+            del:function (index) {
+                data.users.splice(index, 1);
+            },
+            check:function (index,status) {
+                vue.$set(data.users[index],4,status);
+            }
+        }
+    });
+
+    vue.updateNickName = function () {
+        if(data.nk_1.length == 0){
+            if($.trim($('input[name=nickname]').val()).length == 0){
+                qiao.bs.alert('昵称不能为空')
+                return;
+            }
+            $.ajax({
+                type:'post',
+                url:'updateNickName',
+                data:{nickname:$.trim($('input[name=nickname]').val())},
+                success:function (result) {
+                    console.log(result)
+                    if(result){
+                        vue2.user.nickname = $.trim($('input[name=nickname]').val());
+                        qiao.bs.alert('成功更新用户昵称……');
+                    }else {
+                        qiao.bs.alert('参数不匹配，更新失败……');
+                    }
+                }
+            });
+        }else{
+            qiao.bs.alert('昵称不符合要求……');
+        }
+    }
+</script>

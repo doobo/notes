@@ -1,0 +1,18 @@
+<div style="width: 865px;margin:-10px 0px -10px 0px;padding: 0 -10px 0 -10px;">
+	<textarea id="editor"></textarea>
+</div>
+<script>
+	var codeMirrorEditor
+	$(function(){
+		var myTextarea = document.getElementById('editor');
+		codeMirrorEditor = CodeMirror.fromTextArea(myTextarea, {
+			mode: "text/html",
+			theme:'eclipse',
+			lineNumbers: true,
+            //lineWrapping: true,
+            autoCloseBrackets: true,
+            autoCloseTags: true,
+            viewportMargin: Infinity
+		});
+	});
+</script>
